@@ -14,6 +14,9 @@ library(ggbeeswarm)
 library(car)
 library(kableExtra)
 library(janitor)
+library(broom)
+library(ggpubr)
+library(DT)
 ```
 
 #### Introduction
@@ -22,7 +25,9 @@ library(janitor)
 
 #### Results
 
-##### Results A: Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
+##### Results A
+
+Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
 
 ```{r}
 
@@ -50,13 +55,57 @@ mack_creek_a <- mack_creek_df %>%
 
 # Create a finalized graph
 
-ggplot(mack_creek_a, aes(x = year, y = total_count)) +
-  geom_point(aes(color = section))
-
+ggplot(mack_creek_a, aes(x = year, y = total_count, color = section)) +
+  geom_point(size = 0.8) +
+  geom_smooth(method = "lm",
+              size = 0.8,
+              alpha = 0.3) +
+  theme_light() +
+  labs(title = "Annual salamander counts in old growth vs. clear cut sections of Mack Creek",
+       x = "Year",
+       y = "Total Count")
 ```
 
 ##### Results B
+
+Table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
+
+```{r}
+# Data wrangling
+
+mack_creek_b <- mack_creek_df %>% 
+  filter(year == 2017) %>% 
+  filter(species == "DITE") %>% 
+  filter(unittype %in% c("C", "SC", "P")) %>% 
+  select("year", "section", "unittype", "species") %>% 
+  group_by(year, section, unittype) %>% 
+  summarise(count = sum(!is.na(species))) %>%
+  group_by(year) %>% 
+  mutate(proportion = count/sum(count))
+```
+
+```{r}
+# Make a table
+
+mack_creek_b %>% 
+  kable(col.names = c("Year",
+  "Section", 
+                     "Channel",
+                     "Count",
+                     "Proportion")) %>% 
+  kable_styling(bootstrap_options = "striped", 
+                full_width = F,
+                position = "left"
+                ) %>% 
+  add_header_above(c("Salamander counts by channel classification" = 5))
+```
+
 ##### Results C
+
+Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
+
+Answer: The majority of Salamanders in 2017 were found in cascades in clear cut sections of the forrest. The next place Salamanders were found the most was in cascades in old growth forests. 
+
 ##### Results D
 ##### Results E
 
