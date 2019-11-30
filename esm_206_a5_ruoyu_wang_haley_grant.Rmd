@@ -104,12 +104,69 @@ mack_creek_b %>%
 
 Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
 
-Answer: The majority of Salamanders in 2017 were found in cascades in clear cut sections of the forrest. The next place Salamanders were found the most was in cascades in old growth forests. 
+Answer: The majority of Salamanders in 2017 were found in cascades in clear cut sections of the forrest. The next place Salamanders were found the most was in cascades in old growth forests. It appears that salamanders prefer cascades to other location types. 
 
 ##### Results D
+
+Only considering creek section (OG or CC) as a variable (not further factoring by channel classification), answer: Is there a significant difference in mean weights for Pacific giant salamanders observed in the two forest sections (CC and OG) in 2017?
+
+--> Is there a significant difference in mean weights for salamanders observed in CC and OG sections in 2017?
+
+```{r}
+
+# Specify the data to be tested
+
+mack_creek_d <- mack_creek_df %>%
+  filter(year == 2017) %>% 
+  filter(species == "DITE") %>% 
+  select(year, section, species, weight) %>% 
+  group_by(section) %>% 
+  summarise(mean_weight = mean(weight, na.rm = TRUE))
+
+```
+
+```{r}
+
+# Perform a t.test
+# null hypothesis: means are equal (difference in means = 0)
+# alternative hypothesis: means are not equal
+
+t_test_result_d <- t.test(mack_creek_d$mean_weight)
+
+```
+
+The p-value equals `r t_test_result_d$p.value`, which is just barely over our alpha value of .05. This could mean that it's possible these samples are from the same populaiton, but it's relatively unlikely. The salamanders in question we know are from the same population, given that they are all salamanders in Mack Creek, however, they are differentiated by their location in Mack Creek. The salamanders found in Clear Cut sections of the forest had a mean weight of `r mack_creek_d$mean_weight`, while Old Growth sections had a mean weight of `r mack_creek_d$mean_weight`. 
+
+The mean weight for salamanders in Clear Cut sections was greater than the mean weight of salamanders in Old Growth sections, even though the salamanders are technically from the same population.
+ 
 ##### Results E
 
-- 
+Compare weights of Pacific giant salamanders in pools, cascades and side-channels of Mack Creek in 2017. 
+
+```{r}
+
+# you will not consider "section" as a factor here
+
+mack_creek_e <- mack_creek_df %>%
+  filter(year == 2017) %>% 
+  filter(species == "DITE") %>% 
+  select(year, species, weight, unittype) %>% 
+  group_by(unittype) %>% 
+  summarise(mean_weight_unittype = mean(weight, na.rm = TRUE))
+
+```
+
+- First, visually compare Pacific giant salamander weights between the three channel classifications. 
+
+```{r}
+
+# make a graph
+
+
+
+```
+
+
 - 
 - 
 
