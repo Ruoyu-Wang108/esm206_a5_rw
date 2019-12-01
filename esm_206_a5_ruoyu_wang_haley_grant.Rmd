@@ -17,7 +17,12 @@ library(janitor)
 library(broom)
 library(ggpubr)
 library(DT)
+library(viridisLite)
+library(effsize)
 ```
+
+![](Dicamptodon_tenebrosus_2.JPG)
+Photo by Jeffrey Marsten. [Wikipedia](https://commons.wikimedia.org/wiki/File:Dicamptodon_tenebrosus_2.JPG).
 
 #### Introduction
 
@@ -25,9 +30,7 @@ library(DT)
 
 #### Results
 
-##### Results A
-
-Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
+Results A: Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
 
 ```{r}
 
@@ -46,8 +49,8 @@ mack_creek_a <- mack_creek_df %>%
   filter(year > 1992) %>%
   filter(species == "DITE") %>% 
   group_by(year, section) %>% 
-  summarize(total_count <- sum(!is.na(species))) %>% 
-  rename(total_count = "total_count <- sum(!is.na(species))")
+  summarize(annual_count <- sum(!is.na(species))) %>% 
+  rename(total_count = "annual_count <- sum(!is.na(species))")
 
 ```
 
@@ -56,19 +59,18 @@ mack_creek_a <- mack_creek_df %>%
 # Create a finalized graph
 
 ggplot(mack_creek_a, aes(x = year, y = total_count, color = section)) +
-  geom_point(size = 0.8) +
+  geom_point(alpha = 0.5) +
+  geom_line(alpha = 0.3) +
   geom_smooth(method = "lm",
-              size = 0.8,
-              alpha = 0.3) +
+              size = 0.6,
+              alpha = 0) +
   theme_light() +
   labs(title = "Annual salamander counts in old growth vs. clear cut sections of Mack Creek",
        x = "Year",
-       y = "Total Count")
+       y = "Total Count") 
 ```
 
-##### Results B
-
-Table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
+Results B: Table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
 
 ```{r}
 # Data wrangling
@@ -81,7 +83,7 @@ mack_creek_b <- mack_creek_df %>%
   group_by(year, section, unittype) %>% 
   summarise(count = sum(!is.na(species))) %>%
   group_by(year) %>% 
-  mutate(proportion = count/sum(count))
+  mutate(proportion = round(count/sum(count), digits = 2))
 ```
 
 ```{r}
@@ -100,17 +102,30 @@ mack_creek_b %>%
   add_header_above(c("Salamander counts by channel classification" = 5))
 ```
 
-##### Results C
+Results C: Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
 
-Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
+```{r}
 
-Answer: The majority of Salamanders in 2017 were found in cascades in clear cut sections of the forrest. The next place Salamanders were found the most was in cascades in old growth forests. It appears that salamanders prefer cascades to other location types. 
+# chi square: compare proportions
 
-##### Results D
+# null hypothesis: no association between variables
+# alternative hypothesis: association between variables
 
-Only considering creek section (OG or CC) as a variable (not further factoring by channel classification), answer: Is there a significant difference in mean weights for Pacific giant salamanders observed in the two forest sections (CC and OG) in 2017?
+# does forest type (OG or CC) determine what channel the salamanders live (cascade, pool, side-channel)?
 
---> Is there a significant difference in mean weights for salamanders observed in CC and OG sections in 2017?
+OG <- c(201, 45,74)
+CC <- c(247, 31, 90)
+df_b <- rbind(OG, CC)
+colnames(df_b) <- c("Cascade", "Pool", "Side-Channel")
+
+chisq_b <- chisq.test(df_b)
+
+# P-value is greater than our alpha 0.05, so we fail to reject the null hypothesis. We assume there is no associated between variables. The difference between old growth and clear cut forrests didn't change the locations of salamanders.
+```
+
+Channel preference does not differ significantly for salamanders in Old Growth (OG) and Clear Cut (CC) forests ($\chi$^2^(`r chisq_b$parameter`) = `r round(chisq_b$statistic, 2)`, *p* = `r round(chisq_b$p.value, 2)`). 
+
+Results D: Only considering creek section (OG or CC) as a variable (not further factoring by channel classification), answer: Is there a significant difference in mean weights for Pacific giant salamanders observed in the two forest sections (CC and OG) in 2017?
 
 ```{r}
 
@@ -119,9 +134,7 @@ Only considering creek section (OG or CC) as a variable (not further factoring b
 mack_creek_d <- mack_creek_df %>%
   filter(year == 2017) %>% 
   filter(species == "DITE") %>% 
-  select(year, section, species, weight) %>% 
-  group_by(section) %>% 
-  summarise(mean_weight = mean(weight, na.rm = TRUE))
+  select(section, weight) 
 
 ```
 
@@ -131,15 +144,23 @@ mack_creek_d <- mack_creek_df %>%
 # null hypothesis: means are equal (difference in means = 0)
 # alternative hypothesis: means are not equal
 
-t_test_result_d <- t.test(mack_creek_d$mean_weight)
+t_test_result_d <- t.test(mack_creek_d$weight)
 
 ```
 
-The p-value equals `r t_test_result_d$p.value`, which is just barely over our alpha value of .05. This could mean that it's possible these samples are from the same populaiton, but it's relatively unlikely. The salamanders in question we know are from the same population, given that they are all salamanders in Mack Creek, however, they are differentiated by their location in Mack Creek. The salamanders found in Clear Cut sections of the forest had a mean weight of `r mack_creek_d$mean_weight`, while Old Growth sections had a mean weight of `r mack_creek_d$mean_weight`. 
+The p-value equals `r t_test_result_d$p.value`. This value is less than .05, so we can assume that the sample means are significantly different. 
 
-The mean weight for salamanders in Clear Cut sections was greater than the mean weight of salamanders in Old Growth sections, even though the salamanders are technically from the same population.
+```{r}
+
+# effect size with cohen's d
+
+cohen_d_d <- cohen.d(mack_creek_d$weight, mack_creek_d$section, na.rm = TRUE)
+
+```
+
+The Cohen's d test determined that there is a small effect size: `r cohen_d_d$estimate`.
  
-##### Results E
+Results E
 
 Compare weights of Pacific giant salamanders in pools, cascades and side-channels of Mack Creek in 2017. 
 
@@ -150,9 +171,8 @@ Compare weights of Pacific giant salamanders in pools, cascades and side-channel
 mack_creek_e <- mack_creek_df %>%
   filter(year == 2017) %>% 
   filter(species == "DITE") %>% 
-  select(year, species, weight, unittype) %>% 
-  group_by(unittype) %>% 
-  summarise(mean_weight_unittype = mean(weight, na.rm = TRUE))
+  filter(unittype %in% c("C","P","SC")) %>% 
+  select(year, species, weight, unittype) 
 
 ```
 
@@ -162,13 +182,90 @@ mack_creek_e <- mack_creek_df %>%
 
 # make a graph
 
+ggplot(mack_creek_e, aes(x = unittype, y = weight)) +
+  geom_beeswarm(aes(color = unittype),
+              width = 0.2,
+              alpha = 0.5,
+              show.legend = FALSE) +
+  theme_light() +
+  labs(y = "Weight",
+       x = "Location",
+       title = "Salamander weights by location (2017)") + 
+  scale_x_discrete(labels = c("C"="Cascade","P"="Pool","SC"="Side Channel"))
+```
 
+- Second, answer: is there a significant difference in mean weights for Pacific giant salamanders observed in pools vs. cascades vs. side-channels in 2017? 
+
+```{r}
+
+# explore data (histogram)
+
+ggplot(mack_creek_e, aes(x = weight)) +
+  geom_histogram() +
+  facet_wrap(~unittype) +
+  theme_light()
 
 ```
 
+```{r}
 
-- 
-- 
+# explore data (qq plot)
+
+ggplot(mack_creek_e, aes(sample = weight)) +
+  geom_qq() +
+  facet_wrap(~unittype, scales = "free") +
+  theme_light()
+```
+
+```{r}
+
+# check variances
+
+e_summary <- mack_creek_e %>% 
+  group_by(unittype) %>% 
+  summarize(
+    w_mean = mean(weight, na.rm = TRUE),
+    w_se = sd(weight, na.rm = TRUE) / sqrt(n()),
+    w_var = var(weight, na.rm = TRUE)
+  )
+```
+
+```{r}
+# Levene's statistical test for equal variance:
+
+levene_test_e <- leveneTest(weight ~ unittype, data = mack_creek_e)
+
+# not significant, retain null hypothesis
+```
+
+```{r}
+# Run one-way ANOVA to compare group means
+
+aov_e <- aov(weight ~ unittype, data = mack_creek_e)
+
+# there is not a significant difference among groups
+```
+
+```{r}
+# run post-hoc Tukey's
+
+post_hoc_e <- TukeyHSD(aov_e)
+
+# none of the pair-wise functions are significantly different
+```
+
+```{r}
+# reporting outcomes
+
+aov_e_outcomes <- unlist(summary(aov_e))
+
+```
+
+Mean weight did not differ significantly across all groups (one-way ANOVA with post-hoc Tukey's HSD, F`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7], 2)`, *p* = `r round(aov_e_outcomes[9], 3)`.
+
+- Third, describe any concerns you have about comparing means across the groups.
+
+Mean is a measurement that is easily swayed by outliers, and it looks like the data has significant outliers. It may be more beneficial to also compare medians as well to make sure that outliers aren't affecting our result. This could be done through rank-based tests. 
 
 #### Summary
 
