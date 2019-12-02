@@ -66,6 +66,25 @@ ggplot(mack_creek_a, aes(x = year, y = total_count, color = section)) +
        y = "Total Count")
 ```
 
+```{r ruoyu_result_a}
+# Find the counts of pacific giant salamander at OG and CC
+salam_count <- mack_creek_df %>% 
+  filter(species == "DITE") %>% 
+#  filter(!notes == "Recap") %>% whether to minus these data or not
+  group_by(year, section) %>% 
+  summarize(
+    count = n()
+  )
+
+# visualize the results
+ggplot(data = salam_count)+
+  geom_col(position = "dodge", 
+           aes(x = year, y = count, fill = section), 
+           alpha = 0.8,
+           width = 0.8)+
+  geom_line(aes(x = year, y = count, color = section))
+```
+
 ##### Results B
 
 Table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
@@ -100,11 +119,68 @@ mack_creek_b %>%
   add_header_above(c("Salamander counts by channel classification" = 5))
 ```
 
+```{r ruoyu_result_b}
+# find the counts of 
+salam_channel_count <- mack_creek_df %>% 
+  filter(unittype %in% c("C", "P", "SC")) %>% 
+  filter(species == "DITE") %>% 
+  filter(year == "2017") %>% 
+  group_by(unittype, section) %>% 
+  summarize(
+    count = n()
+  )
+
+channel_section_table <- salam_channel_count %>% 
+  pivot_wider(names_from = unittype, values_from = count) 
+
+channel_section_props <- channel_section_table %>% 
+  janitor::adorn_percentages(denominator = "row") %>% 
+  # not sure the denomincator should be the column or the row
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front") 
+
+# rownames("channel_section_table$section")
+# rownames<-(c("Clear Cut", "Old Growth"))
+# Creat facets labels in advance.
+# table_row_labs <- c("Clear Cut", "Old Growth")
+# names(table_row_labs) <- c("CC","OG")
+
+#rowrename(channel_section_table,"CC"="Clear Cut", "OG"="Old Growth")
+
+channel_section_props %>% 
+  kable(
+    col.names = c("Section", "Cascades","Pool", "Side-Channel"),
+    align = "cccc"
+  ) %>% 
+  kable_styling(bootstrap_options = "striped", 
+                full_width = F,
+                position = "center") %>% 
+  add_header_above(c("Salamander counts by channel and sections clasification in 2017" = 4))
+```
+
+Answer: The majority of Salamanders in 2017 were found in cascades in clear cut sections of the forrest. The next place Salamanders were found the most was in cascades in old growth forests. It appears that salamanders prefer cascades to other location types. 
+
 ##### Results C
 
 Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
 
-Answer: The majority of Salamanders in 2017 were found in cascades in clear cut sections of the forrest. The next place Salamanders were found the most was in cascades in old growth forests. It appears that salamanders prefer cascades to other location types. 
+Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
+
+```{r}
+# Chi-square test for independence
+
+# A. First, get just a contingency table of counts we just want the four count values in a df, nothing else: 
+salam_chi_counts <- channel_section_table %>% 
+  select(-section)
+
+# B. Run a chi-square test
+my_salam_chi <- chisq.test(salam_chi_counts)
+my_salam_chi
+```
+
+Result: the channel location and two sections are independent. 
+Since p > 0.05, we retain the null hypothesis that channel locations and sampling sections are independent. In other words: "There are no significant differences in forest condition (clear cut / old growth) based on where in the channels salamanders are found ($\chi$^2^(`r my_salam_chi$parameter`) = `r round(my_salam_chi$statistic,2)`, *p* (`r round(my_salam_chi$p.value,3)`) > 0.05)."
+
 
 ##### Results D
 
