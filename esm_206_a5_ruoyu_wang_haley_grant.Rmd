@@ -26,7 +26,11 @@ Photo by Jeffrey Marsten. [Wikipedia](https://commons.wikimedia.org/wiki/File:Di
 
 #### Introduction
 
+This report compares the weights and abunance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut and Old Growth forrests. The Clear Cut sections were cut down around 1963, and the Old Growth coniferous forest is around 500 years old. Data related to their locations within Mack Creek is also studied. Within the two sections of forrests, salamanders are found in Cascades, Pools and Side-Channels. Salamanders found in Isolated Pools were not included in this report, as they the pools are separated from the channel. We are only interested in salamanders found in the creek.  
+
 #### Data and Methods
+
+
 
 #### Results
 
@@ -34,7 +38,7 @@ Photo by Jeffrey Marsten. [Wikipedia](https://commons.wikimedia.org/wiki/File:Di
 
 Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
 
-```{r}
+```{r result_a_read_data}
 
 # Read in data
 
@@ -44,7 +48,7 @@ mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>%
 
 ```
 
-```{r} 
+```{r result_a_data_wrangling} 
 
 # Data wrangling
 
@@ -54,7 +58,7 @@ mack_creek_a <- mack_creek_df %>%
 
 ```
 
-```{r}
+```{r result_a_graph}
 
 # Create a finalized graph
 
@@ -126,7 +130,7 @@ Is there a significant difference in where in the channel Pacific giant salamand
 
  Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
 
-```{r, include = FALSE}
+```{r result_c_chisquare_test, include = FALSE}
 
 # Chi-square test for independence
 
@@ -147,7 +151,7 @@ Since p > 0.05, we retain the null hypothesis that channel locations and samplin
 
 Only considering creek section (OG or CC) as a variable (not further factoring by channel classification), answer: Is there a significant difference in mean weights for Pacific giant salamanders observed in the two forest sections (CC and OG) in 2017?
 
-```{r}
+```{r result_d_specify_data}
 
 # Specify the data to be tested
 
@@ -158,7 +162,7 @@ mack_creek_d <- mack_creek_df %>%
 ```
 
 
-```{r}
+```{r result_d_t_test}
 
 # Perform a t.test
 # null hypothesis: means are equal (difference in means = 0)
@@ -170,7 +174,7 @@ t_test_result_d <- t.test(mack_creek_d$weight)
 
 The p-value equals `r t_test_result_d$p.value`. This value is less than .05, so we can assume that the sample means are significantly different. 
 
-```{r}
+```{r result_d_cohens_d}
 
 # effect size with cohen's d
 
@@ -184,7 +188,7 @@ The Cohen's d test determined that there is a small effect size: `r cohen_d_d$es
 
 Compare weights of Pacific giant salamanders in pools, cascades and side-channels of Mack Creek in 2017. 
 
-```{r}
+```{r result_e_data_wrangling}
 
 # you will not consider "section" as a factor here
 
@@ -198,7 +202,7 @@ mack_creek_e <- mack_creek_df %>%
 
 - First, visually compare Pacific giant salamander weights between the three channel classifications. 
 
-```{r}
+```{r result_e_weights_graph}
 
 # make a graph
 
@@ -218,17 +222,17 @@ ggplot(mack_creek_e, aes(x = unittype, y = weight)) +
 
 - Second, answer: is there a significant difference in mean weights for Pacific giant salamanders observed in pools vs. cascades vs. side-channels in 2017? 
 
-```{r}
+```{r result_e_density_graph}
 # density graph
 
 ggplot(mack_creek_e, aes(x = weight)) +
   geom_density(aes(fill = unittype, color = unittype), alpha = 0.3) +
   theme_minimal() +
-  theme(legend.position = c(.75, .6))
+  theme(legend.position = c(.75, .6)) 
 
 ```
 
-```{r}
+```{r result_e_check_variance}
 
 # check variances
 
@@ -243,7 +247,7 @@ e_summary <- mack_creek_e %>%
 # largest variance (Pool) (185.58), smallest variance (Side-Channel) (68.31)
 ```
 
-```{r}
+```{r result_e_levene_test}
 # Levene's statistical test for equal variance:
 
 levene_test_e <- leveneTest(weight ~ unittype, data = mack_creek_e)
@@ -251,7 +255,7 @@ levene_test_e <- leveneTest(weight ~ unittype, data = mack_creek_e)
 # not significant, retain null hypothesis
 ```
 
-```{r}
+```{r result_e_anova}
 # Run one-way ANOVA to compare group means
 
 # null hypothesis: no significant difference across groups
@@ -262,7 +266,7 @@ aov_e <- aov(weight ~ unittype, data = mack_creek_e)
 # There is significant difference in means across groups.
 ```
 
-```{r}
+```{r result_e_tukey}
 # run post-hoc Tukey's
 
 post_hoc_e <- TukeyHSD(aov_e)
@@ -270,7 +274,7 @@ post_hoc_e <- TukeyHSD(aov_e)
 # SC-P is significantly different. 
 ```
 
-```{r}
+```{r result_e_report_outcomes}
 # reporting outcomes
 
 aov_e_outcomes <- unlist(summary(aov_e))
