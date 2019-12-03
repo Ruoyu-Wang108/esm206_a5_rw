@@ -22,6 +22,7 @@ library(ggpubr)
 library(DT)
 library(viridisLite)
 library(effsize)
+library(knitr)
 
 # Read in raw data
 mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>% 
@@ -30,12 +31,6 @@ mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>%
 ```
 
 
-
-![](Dicamptodon_tenebrosus_2.JPG)
-
-
-***Figure. 1*** *Pacific giant salamander (Dicamptodon tenebrosus). Credit: Jeffrey Marsten. [Wikipedia](https://commons.wikimedia.org/wiki/File:Dicamptodon_tenebrosus_2.JPG).*
-
 ### Introduction
 
 This report compares the weights and abundance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut (c. 1963) and 500-year old coniferous Old Growth forests. Data related to their locations within Mack Creek is also studied. Within the two sections of forests, salamanders are found in Cascades, Pools and Side-Channels. We wanted to see where salamanders are found the most, and if the section of Forrest- Clear Cut or Old Growth- has an affect on their location. This report does not include Salamanders found in Isolated Pools, as we were only interested in Salamanders found in the creek. Isolated pool are separated from the channel and not the focus of our study.
@@ -43,13 +38,20 @@ This report compares the weights and abundance of Pacific giant salamanders in M
 
 This report compares the weights and abundance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut and Old Growth forests. The Clear Cut sections were cut down around 1963, and the Old Growth coniferous forest is around 500 years old. Data related to their locations within Mack Creek is also studied. Within the two sections of forests, salamanders are found in Cascades, Pools and Side-Channels. Salamanders found in Isolated Pools were not included in this report, as they the pools are separated from the channel. We are only interested in salamanders found in the creek.  
 
+```{r  out.width = "60%"}
+include_graphics("Dicamptodon_tenebrosus_2.JPG") 
+```
+
+***Figure. 1*** *Pacific giant salamander (Dicamptodon tenebrosus). Credit: Jeffrey Marsten. [Wikipedia](https://commons.wikimedia.org/wiki/File:Dicamptodon_tenebrosus_2.JPG).*
 
 ### Data and Methods
 
 The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the study "Aquatic Vertebrate Population Study in Mack Creek," by authors Stanley V. Gregory and the Andrews Forest LTER Site. The study monitored populations of West Slope cutthroat trout (Onchorhyncus clarki clarki) since 1987, as well as Pacific giant salamanders (Dicamptodon tenebrosus) beginning in 1993. This report visualizes annual counts of salamanders between Clear Cut and Old Growth sections from 1987 to present to show changes in populations. We used Chi-Square tests, t-tests, as well as One-Way ANOVA tests to determine if there were significant differences in counts or weights of salamanders across sections (Clear Cut or Old Growth) or locations (Cascades, Pools or Side-Channels).      
 
+```{r  out.width = "60%"}
+include_graphics("mack_creek_map_3.png") 
+```
 
-![](mack_creek_map_3.png) 
 
 ***Figure. 2*** *Map of Mack Creek, Oregon. Courtesy of [Google Maps](https://www.google.com/maps/place/44°13'17.3%22N+122°10'04.8%22W/@44.8758978,-124.1058318,7.57z/data=!4m5!3m4!1s0x0:0x0!8m2!3d44.2214667!4d-122.168!5m1!1e4?hl=en-US).*
 
@@ -91,7 +93,7 @@ ggplot(data = mack_creek_a,
   theme_minimal() 
 
 ```
-***Figure. 1*** *Data: .*
+***Figure. 3*** *Data: .*
 
 #### B. Salamander abundance by channel classification and forest sections in 2017.
 
@@ -157,7 +159,6 @@ salam_chi_counts <- channel_section_table %>%
 
 # B. Run a chi-square test
 my_salam_chi <- chisq.test(salam_chi_counts)
-my_salam_chi
 
 ```
 
@@ -184,7 +185,6 @@ forest_summary_table <- mack_creek_d %>%
     se = sd(weight, na.rm = TRUE) / sqrt(n()),
     var = var(weight, na.rm = TRUE)
   )
-forest_summary_table
 
 # Visulize the two groups of data
 ggplot()+
@@ -207,7 +207,7 @@ ggplot()+
   scale_color_manual(values = cbPalette) +
   theme_minimal()
 ```
-***Figure. 2*** *Data: .*
+***Figure. 4*** *Data: .*
 
 ```{r result_d_ttest}
 # Perform a t.test
@@ -251,7 +251,7 @@ channel_summary_table <- mack_creek_e %>%
   )
 ```
 
-##### 1. Visually compare Pacific giant salamander weights between the three channel classifications. 
+**1. Visually compare Pacific giant salamander weights between the three channel classifications.**
 
 ```{r result_e_weights_graph}
 # make a graph
@@ -281,9 +281,9 @@ ggplot() +
   scale_color_manual(values = c("#009E73", "#0072B2", "#CC79A7") )
 
 ```
-***Figure. 3*** *Data: .*
+***Figure. 5*** *Data: .*
 
-##### 2. Is there a significant difference in mean weights for Pacific giant salamanders observed in pools vs. cascades vs. side-channels in 2017? 
+**2. Is there a significant difference in mean weights for Pacific giant salamanders observed in pools vs. cascades vs. side-channels in 2017?**
 
 
 ```{r result_e_check_variance}
@@ -337,7 +337,7 @@ aov_e_outcomes <- unlist(summary(aov_e))
 
 Of the three groups, mean salamander weight differed significantly between side-channels and pools (one-way ANOVA with post-hoc Tukey's HSD, F(`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7],2)`, *p* = `r round(aov_e_outcomes[9],3)`).
 
-##### 3. Limits about comparing means across the groups.
+**3. Limits about comparing means across the groups.**
 
 Mean is a measurement that is easily swayed by outliers, and it looks like the data has significant outliers. It may be more beneficial to also compare medians as well to make sure that outliers aren't affecting our result. This could be done through rank-based tests. 
 
