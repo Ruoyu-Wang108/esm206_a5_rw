@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = "center")
 
 library(tidyverse)
 library(janitor)
@@ -97,12 +97,6 @@ channel_section_props <- channel_section_table %>%
   adorn_pct_formatting(digits = 0) %>% 
   adorn_ns(position = "front") 
 
-# rownames("channel_section_table$section")
-# rownames<-(c("Clear Cut", "Old Growth"))
-# Creat facets labels in advance.
-# table_row_labs <- c("Clear Cut", "Old Growth")
-# names(table_row_labs) <- c("CC","OG")
-
 channel_section_props %>% 
   kable(
     col.names = c("Section", "Cascades","Pool", "Side-Channel"),
@@ -130,6 +124,7 @@ Is there a significant difference in where in the channel Pacific giant salamand
  Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
 
 ```{r, include = FALSE}
+
 # Chi-square test for independence
 
 # A. First, get just a contingency table of counts we just want the four count values in a df, nothing else: 
@@ -154,10 +149,10 @@ Only considering creek section (OG or CC) as a variable (not further factoring b
 
 mack_creek_d <- mack_creek_df %>%
   filter(year == 2017) %>% 
-  filter(species == "DITE") %>% 
   select(section, weight) 
 
 ```
+
 
 ```{r}
 
@@ -206,7 +201,7 @@ mack_creek_e <- mack_creek_df %>%
 ggplot(mack_creek_e, aes(x = unittype, y = weight)) +
   geom_beeswarm(aes(color = unittype),
               width = 0.2,
-              alpha = 0.5,
+              alpha = 0.7,
               show.legend = FALSE) +
   theme_light() +
   labs(y = "Weight",
@@ -292,9 +287,6 @@ Mean is a measurement that is easily swayed by outliers, and it looks like the d
 #### References 
 
 Gregory S. V. 2016. Aquatic Vertebrate Population Study in Mack Creek, Andrews Experimental Forest, 1987 to present. Environmental Data Initiative. https://doi.org/10.6073/pasta/5de64af9c11579266ef20da2ff32f702.
-
-
-
 
 
 
