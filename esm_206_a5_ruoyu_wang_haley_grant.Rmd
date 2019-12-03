@@ -33,10 +33,7 @@ mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>%
 
 ### Introduction
 
-This report compares the weights and abundance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut (c. 1963) and 500-year old coniferous Old Growth forests. Data related to their locations within Mack Creek is also studied. Within the two sections of forests, salamanders are found in Cascades, Pools and Side-Channels. We wanted to see where salamanders are found the most, and if the section of Forrest- Clear Cut or Old Growth- has an affect on their location. This report does not include Salamanders found in Isolated Pools, as we were only interested in Salamanders found in the creek. Isolated pool are separated from the channel and not the focus of our study.
-
-
-This report compares the weights and abundance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut and Old Growth forests. The Clear Cut sections were cut down around 1963, and the Old Growth coniferous forest is around 500 years old. Data related to their locations within Mack Creek is also studied. Within the two sections of forests, salamanders are found in Cascades, Pools and Side-Channels. Salamanders found in Isolated Pools were not included in this report, as they the pools are separated from the channel. We are only interested in salamanders found in the creek.  
+This report compares the weights and abundance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut (c. 1963) and 500-year-old coniferous Old Growth forests. Within the two sections of forests, salamanders are found in Cascades, Pools and Side-Channels. We wanted to see where salamanders are found the most, and if the section of Forrest- Clear Cut or Old Growth- has an affect on their location. This report does not include Salamanders found in Isolated Pools, as these areas are separated from the creek and not the focus of this report. 
 
 ```{r  out.width = "60%"}
 knitr::include_graphics("Dicamptodon_tenebrosus_2.JPG") 
@@ -46,8 +43,7 @@ knitr::include_graphics("Dicamptodon_tenebrosus_2.JPG")
 
 ### Data and Methods
 
-google earth pro
-The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the study "Aquatic Vertebrate Population Study in Mack Creek," by authors Stanley V. Gregory and the Andrews Forest LTER Site. The study monitored populations of West Slope cutthroat trout (Onchorhyncus clarki clarki) since 1987, as well as Pacific giant salamanders (Dicamptodon tenebrosus) beginning in 1993. This report visualizes annual counts of salamanders between Clear Cut and Old Growth sections from 1987 to present to show changes in populations. We used Chi-Square tests, t-tests, as well as One-Way ANOVA tests to determine if there were significant differences in counts or weights of salamanders across sections (Clear Cut or Old Growth) or locations (Cascades, Pools or Side-Channels).      
+The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the study "Aquatic Vertebrate Population Study in Mack Creek," by authors Stanley V. Gregory and the Andrews Forest LTER Site. The study monitored populations of West Slope cutthroat trout (Onchorhyncus clarki clarki) since 1987, as well as Pacific giant salamanders (Dicamptodon tenebrosus) beginning in 1993. This report uses their data to visualize annual counts of salamanders between Clear Cut and Old Growth sections from 1987 to present to show changes in populations. We used Chi-Square tests, t-tests, as well as One-Way ANOVA tests to determine if there were significant differences in counts or weights of salamanders across sections (Clear Cut or Old Growth) or locations (Cascades, Pools or Side-Channels).      
 
 ```{r  out.width = "60%"}
 include_graphics("mack_creek_map_3.png") 
@@ -134,7 +130,7 @@ channel_section_props <- channel_section_table %>%
 # Put the results in a nice kable.
 channel_section_props %>% 
   kable(
-    col.names = c("Section", "Cascades","Pool", "Side-Channel"),
+    col.names = c("Section", "Cascades","Pool", "Side Channel"),
     align = "cccc"
   ) %>% 
   kable_styling(bootstrap_options = "striped", 
@@ -280,14 +276,15 @@ ggplot() +
              color = "grey30",
              size = 3,
              show.legend = FALSE)+
-  geom_hline(data = channel_summary_table, 
-             aes(yintercept = mean,
-                 colour = unittype),
-             linetype = "dashed",
-             size = 0.6,
-             show.legend = FALSE)+
+ # geom_hline(data = channel_summary_table,
+ #           aes(yintercept = mean,
+ #              colour = unittype),
+ #         linetype = "dashed",
+ #        size = 0.6,
+ #       show.legend = FALSE)+
   scale_color_manual(values = c("#009E73", "#0072B2", "#CC79A7"))+
-  theme_minimal()
+  theme_minimal()+
+  coord_flip()
 
 ```
 ***Figure. 5*** *The grey points showed the mean weights within each channel groups, the error bar indicates the standard diviation of the data. Data: .*
