@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = "center")
 
+# Attach necessary packages
 library(tidyverse)
 library(janitor)
 library(ggbeeswarm)
@@ -19,6 +20,11 @@ library(ggpubr)
 library(DT)
 library(viridisLite)
 library(effsize)
+
+# Read in raw data
+mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>% 
+  clean_names() %>% 
+  filter(species == "DITE")
 ```
 
 <center>
@@ -32,6 +38,10 @@ Pacific giant salamander (Dicamptodon tenebrosus). Photo by Jeffrey Marsten. [Wi
 #### Introduction
 
 This report compares the weights and abunance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut (c. 1963) and 500-year old coniferous Old Growth forrests. Data related to their locations within Mack Creek is also studied. Within the two sections of forrests, salamanders are found in Cascades, Pools and Side-Channels. We wanted to see where salamanders are found the most, and if the section of forrest- Clear Cut or Old Growth- has an affect on their location. This report does not include Salamanders found in Isolated Pools, as we were only interested in Salamanders found in the creek. Isolated pool are separated from the channel and not the focus of our study.
+
+
+This report compares the weights and abundance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut and Old Growth forests. The Clear Cut sections were cut down around 1963, and the Old Growth coniferous forest is around 500 years old. Data related to their locations within Mack Creek is also studied. Within the two sections of forests, salamanders are found in Cascades, Pools and Side-Channels. Salamanders found in Isolated Pools were not included in this report, as they the pools are separated from the channel. We are only interested in salamanders found in the creek.  
+
 
 #### Data and Methods
 
@@ -51,39 +61,25 @@ Map of Mack Creek, Oregon. Courtesy of [Google Maps](https://www.google.com/maps
 
 Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
 
-```{r result_a_read_data}
-
-# Read in data
-
-mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>% 
-  clean_names() %>% 
-  filter(species == "DITE")
-
-```
-
-```{r result_a_data_wrangling} 
-
-# Data wrangling
-
+```{r compare_counts_sections}
+# Find the counts of pacific giant salamander at OG and CC
 mack_creek_a <- mack_creek_df %>% 
+# filter(!notes == "Recap") %>% whether to minus these data or not
   group_by(year, section) %>% 
-  summarize(total_count = n())
+  summarize(
+    total_count = n()
+    )
 
-```
-
-```{r result_a_graph}
-
-# Create a finalized graph
-
+# Visualize the results
 ggplot(mack_creek_a, aes(x = year, y = total_count, color = section, pch = section)) +
   geom_point() +
   geom_line(alpha = 0.3) +
   theme_light() +
-  labs(title = "Annual salamander counts in old growth vs. clear cut sections of Mack Creek",
-       x = "Year",
+  labs(x = "Year",
        y = "Total Count") 
 
 ```
+***Figure. 1*** *Data: .*
 
 ##### Results B
 
@@ -91,9 +87,9 @@ Table of 2017 salamander counts by channel classification (pool, cascades and si
 
 Results B: Table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
 
+***Table. 1*** *Summary table site groups. Data: .* 
 ```{r ruoyu_result_b}
-
-# find the counts of 
+# Find the counts of salamander by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek in year 2017.
 salam_channel_count <- mack_creek_df %>% 
   filter(unittype %in% c("C", "P", "SC")) %>% 
   filter(year == "2017") %>% 
@@ -107,15 +103,18 @@ salam_channel_count <- mack_creek_df %>%
     "Clear Cut"
   ))
 
+# Change the dataframe into wide format.
 channel_section_table <- salam_channel_count %>% 
   pivot_wider(names_from = unittype, values_from = count) 
 
+# Calculate the propotions within the dataframe.
 channel_section_props <- channel_section_table %>% 
   janitor::adorn_percentages(denominator = "row") %>% 
   # not sure the denomincator should be the column or the row
   adorn_pct_formatting(digits = 0) %>% 
   adorn_ns(position = "front") 
 
+# Put the results in a nice kable.
 channel_section_props %>% 
   kable(
     col.names = c("Section", "Cascades","Pool", "Side-Channel"),
@@ -124,7 +123,7 @@ channel_section_props %>%
   kable_styling(bootstrap_options = "striped", 
                 full_width = F,
                 position = "center") %>% 
-  add_header_above(c("Salamander counts by channel and sections clasification in 2017" = 4))
+  add_header_above(c("Salamander counts by channel and sections classification in 2017" = 4))
 
 ```
 
@@ -132,18 +131,13 @@ channel_section_props %>%
 
 Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
 
- chi square: compare proportions
+We use chi square test to compare proportions.
 
- null hypothesis: no association between variables
- alternative hypothesis: association between variables
+Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
 
+alternative hypothesis: association between variables
 
- does forest type (OG or CC) determine what channel the salamanders live (cascade, pool, side-channel)?
-
-
- Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
-
-```{r result_c_chisquare_test, include = FALSE}
+```{r result_c_chi_test}
 
 # Chi-square test for independence
 
@@ -164,18 +158,43 @@ Since p > 0.05, we retain the null hypothesis that channel locations and samplin
 
 Only considering creek section (OG or CC) as a variable (not further factoring by channel classification), answer: Is there a significant difference in mean weights for Pacific giant salamanders observed in the two forest sections (CC and OG) in 2017?
 
-```{r result_d_specify_data}
-
+```{r result_d}
 # Specify the data to be tested
-
 mack_creek_d <- mack_creek_df %>%
   filter(year == 2017) %>% 
-  select(section, weight) 
+  select(section, weight)
 
+# Summary table for different sections of forest.
+forest_summary_table <- mack_creek_d %>% 
+  group_by(section) %>% 
+  summarize(
+    mean = mean(weight, na.rm = TRUE),
+    sd = sd(weight, na.rm = TRUE),
+    count = n(),
+    se = sd(weight, na.rm = TRUE) / sqrt(n()),
+    var = var(weight, na.rm = TRUE)
+  )
+forest_summary_table
+
+# Visulize the two groups of data
+ggplot()+
+  geom_density(data = mack_creek_d,
+                 aes(x = weight, 
+                     fill = section,
+                     color = section),
+               show.legend = FALSE,
+               alpha = 0.5)+
+  labs(x = "Weight (kg)", y = "Count")+
+  geom_vline(data = forest_summary_table,
+             aes(xintercept = mean,
+                 colour = section),
+             linetype = "dashed",
+             size = 1,
+             show.legend = FALSE)
 ```
+***Figure. 2*** *Data: .*
 
-
-```{r result_d_t_test}
+```{r result_d_ttest_d}
 
 # Perform a t.test
 # null hypothesis: means are equal (difference in means = 0)
@@ -183,17 +202,14 @@ mack_creek_d <- mack_creek_df %>%
 
 t_test_result_d <- t.test(mack_creek_d$weight)
 
-```
-
-The p-value equals `r t_test_result_d$p.value`. This value is less than .05, so we can assume that the sample means are significantly different. 
-
-```{r result_d_cohens_d}
-
 # effect size with cohen's d
 
 cohen_d_d <- cohen.d(mack_creek_d$weight, mack_creek_d$section, na.rm = TRUE)
 
 ```
+
+The p-value equals `r t_test_result_d$p.value`. This value is less than 0.05, so we can assume that the sample means are significantly different. 
+
 
 The Cohen's d test determined that there is a small effect size: `r cohen_d_d$estimate`.
  
@@ -203,14 +219,24 @@ Compare weights of Pacific giant salamanders in pools, cascades and side-channel
 
 ```{r result_e_data_wrangling}
 
-# you will not consider "section" as a factor here
-
+# Only consider the channel type as a factor here
 mack_creek_e <- mack_creek_df %>%
   filter(year == 2017) %>% 
-  filter(species == "DITE") %>% 
   filter(unittype %in% c("C","P","SC")) %>% 
-  select(year, species, weight, unittype) 
+  select(weight, unittype) 
 
+# Create a summary table
+channel_summary_table <- mack_creek_e %>% 
+  group_by(unittype) %>% 
+  summarize(
+    mean = mean(weight, na.rm = TRUE),
+    sd = sd(weight, na.rm = TRUE),
+    se = sd(weight, na.rm = TRUE) / sqrt(n()),
+    var = var(weight, na.rm = TRUE),
+    count = n()
+  )
+
+channel_summary_table
 ```
 
 - First, visually compare Pacific giant salamander weights between the three channel classifications. 
@@ -227,9 +253,13 @@ ggplot(mack_creek_e, aes(x = unittype, y = weight)) +
   theme_light() +
   labs(y = "Weight",
        x = "Location",
-       title = "Salamander weights by location",
        subtitle = "2017") + 
-  scale_x_discrete(labels = c("C"="Cascade","P"="Pool","SC"="Side Channel"))
+  scale_x_discrete(labels = c("C"="Cascade","P"="Pool","SC"="Side Channel"))+
+  geom_point(data = channel_summary_table,
+             aes(x = unittype,
+                 y = mean),
+             size = 1,
+             show.legend = FALSE)
 
 ```
 
@@ -241,7 +271,13 @@ ggplot(mack_creek_e, aes(x = unittype, y = weight)) +
 ggplot(mack_creek_e, aes(x = weight)) +
   geom_density(aes(fill = unittype, color = unittype), alpha = 0.3) +
   theme_minimal() +
-  theme(legend.position = c(.75, .6)) 
+  theme(legend.position = c(0.75, 0.6)) +
+  geom_vline(data = channel_summary_table,
+             aes(xintercept = mean,
+                 colour = unittype),
+             linetype = "dashed",
+             size = 1,
+             show.legend = FALSE)
 
 ```
 
@@ -305,8 +341,6 @@ Mean is a measurement that is easily swayed by outliers, and it looks like the d
 #### References 
 
 Gregory S. V. 2016. Aquatic Vertebrate Population Study in Mack Creek, Andrews Experimental Forest, 1987 to present. Environmental Data Initiative. https://doi.org/10.6073/pasta/5de64af9c11579266ef20da2ff32f702.
-
-
 
 
 
