@@ -27,13 +27,12 @@ mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>%
   filter(species == "DITE")
 ```
 
-<center>
+
 
 ![](Dicamptodon_tenebrosus_2.JPG)
 
-</center>
 
-Pacific giant salamander (Dicamptodon tenebrosus). Photo by Jeffrey Marsten. [Wikipedia](https://commons.wikimedia.org/wiki/File:Dicamptodon_tenebrosus_2.JPG).
+***Figure. 1*** *Pacific giant salamander (Dicamptodon tenebrosus). Credit: Jeffrey Marsten. [Wikipedia](https://commons.wikimedia.org/wiki/File:Dicamptodon_tenebrosus_2.JPG).*
 
 #### Introduction
 
@@ -47,19 +46,17 @@ This report compares the weights and abundance of Pacific giant salamanders in M
 
 The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the study "Aquatic Vertebrate Population Study in Mack Creek," by authors Stanley V. Gregory and the Andrews Forest LTER Site. The study monitored populations of West Slope cutthroat trout (Onchorhyncus clarki clarki) since 1987, as well as Pacific giant salamanders (Dicamptodon tenebrosus) beginning in 1993. This report visualizes anual counts of salamanders between Clear Cut and Old Growth sections from 1987 to present to show changes in populations. We used Chi-Square tests, t-tests, as well as One-Way ANOVA tests to determine if there were significant differences in counts or weights of salamanders across sections (Clear Cut or Old Growth) or locations (Cascades, Pools or Side-Channels).      
 
-<center>
+
 
 ![](mack_creek_map_3.png) 
 
-</center>
+***Figure. 2*** *Map of Mack Creek, Oregon. Courtesy of [Google Maps](https://www.google.com/maps/place/44°13'17.3%22N+122°10'04.8%22W/@44.8758978,-124.1058318,7.57z/data=!4m5!3m4!1s0x0:0x0!8m2!3d44.2214667!4d-122.168!5m1!1e4?hl=en-US).*
 
-Map of Mack Creek, Oregon. Courtesy of [Google Maps](https://www.google.com/maps/place/44°13'17.3%22N+122°10'04.8%22W/@44.8758978,-124.1058318,7.57z/data=!4m5!3m4!1s0x0:0x0!8m2!3d44.2214667!4d-122.168!5m1!1e4?hl=en-US).
+
 
 #### Results
 
-##### Results A
-
-Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
+##### A: Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
 
 ```{r compare_counts_sections}
 # Find the counts of pacific giant salamander at OG and CC
@@ -70,13 +67,28 @@ mack_creek_a <- mack_creek_df %>%
     total_count = n()
     )
 
+# Made a colorblind-friendly palette.
+cbPalette <- c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#CC79A7")
+
 # Visualize the results
-ggplot(mack_creek_a, aes(x = year, y = total_count, color = section, pch = section)) +
-  geom_point() +
-  geom_line(alpha = 0.3) +
-  theme_light() +
+ggplot(data = mack_creek_a, 
+       aes(x = year, y = total_count, 
+           color = section, pch = section)) +
+  geom_point(show.legend = FALSE,
+             size = 3) +
+  geom_line(show.legend = FALSE,
+             width = 1) +
   labs(x = "Year",
-       y = "Total Count") 
+       y = "Total Count")+
+  annotate("text", 
+           x = 2016:2016, 
+           y = c(380, 155), 
+           label = c("Clear Cut", "Old Growth"),
+           color = c("#E69F00", "#56B4E9"),
+           fontface =2)+
+  scale_color_manual(values = cbPalette) +
+  scale_x_discrete(breaks = c(1995, 2000, 2005, 2010, 2015, 2017))+
+  theme_minimal() 
 
 ```
 ***Figure. 1*** *Data: .*
@@ -138,7 +150,6 @@ Null hypothesis: No association between channel classification and different for
 alternative hypothesis: association between variables
 
 ```{r result_c_chi_test}
-
 # Chi-square test for independence
 
 # A. First, get just a contingency table of counts we just want the four count values in a df, nothing else: 
@@ -178,40 +189,41 @@ forest_summary_table
 
 # Visulize the two groups of data
 ggplot()+
-  geom_density(data = mack_creek_d,
+  geom_histogram(data = mack_creek_d,
                  aes(x = weight, 
                      fill = section,
                      color = section),
                show.legend = FALSE,
-               alpha = 0.5)+
-  labs(x = "Weight (kg)", y = "Count")+
+               alpha = 0.4,
+               binwidth = 1)+
+  labs(x = "Weight (g)", y = "Count")+
   geom_vline(data = forest_summary_table,
              aes(xintercept = mean,
                  colour = section),
              linetype = "dashed",
              size = 1,
-             show.legend = FALSE)
+             show.legend = FALSE)+
+  scale_y_discrete(expand = c(0,0)) +
+#  scale_x_continuous(limits = c(0, 25))+
+  scale_color_manual(values = cbPalette) +
+  theme_minimal()
 ```
 ***Figure. 2*** *Data: .*
 
-```{r result_d_ttest_d}
-
+```{r result_d_ttest}
 # Perform a t.test
 # null hypothesis: means are equal (difference in means = 0)
 # alternative hypothesis: means are not equal
 
-t_test_result_d <- t.test(mack_creek_d$weight)
+sectiont_ttest <- t.test(data = mack_creek_d, weight~section)
 
 # effect size with cohen's d
-
-cohen_d_d <- cohen.d(mack_creek_d$weight, mack_creek_d$section, na.rm = TRUE)
+section_d <- effsize::cohen.d(data = mack_creek_d, weight~section, na.rm = TRUE)
 
 ```
 
-The p-value equals `r t_test_result_d$p.value`. This value is less than 0.05, so we can assume that the sample means are significantly different. 
+In year 2017, mean weight of salam (g) measured in clear cut forests (`r round(forest_summary_table$mean[1], 2)` $\pm$ `r round(forest_summary_table$sd[1], 2)`, n = `r forest_summary_table$count[1]`) did not have significant difference from the average salam weight in old growth froest areas (`r round(forest_summary_table$mean[2], 2)` $\pm$ `r round(forest_summary_table$sd[2], 2)`, n = `r forest_summary_table$count[2]`) by a unpaired two-sample t-test (t(`r round(sectiont_ttest$parameter, 2)`) = `r round(sectiont_ttest$statistic, 2)`, *p*(`r round(sectiont_ttest$p.value, 3)`) > 0.05). The difference in mean weight between the two groups is 1.20 mm, with a negligible effect size (Cohen's d = `r round(section_d$estimate, 2)`). Therefore, we consider the salam weights in clear cut areas were not significantly different from old growth ones. Density presented in Figure.2.
 
-
-The Cohen's d test determined that there is a small effect size: `r cohen_d_d$estimate`.
  
 ##### Results E
 
@@ -223,7 +235,12 @@ Compare weights of Pacific giant salamanders in pools, cascades and side-channel
 mack_creek_e <- mack_creek_df %>%
   filter(year == 2017) %>% 
   filter(unittype %in% c("C","P","SC")) %>% 
-  select(weight, unittype) 
+  select(weight, unittype) %>% 
+  mutate(unittype = case_when(
+    unittype == "C" ~ "Cascade",
+    unittype == "P" ~"Pool",
+    TRUE ~ "Side Channel"
+  )) 
 
 # Create a summary table
 channel_summary_table <- mack_creek_e %>% 
@@ -235,66 +252,61 @@ channel_summary_table <- mack_creek_e %>%
     var = var(weight, na.rm = TRUE),
     count = n()
   )
-
-channel_summary_table
 ```
 
 - First, visually compare Pacific giant salamander weights between the three channel classifications. 
 
 ```{r result_e_weights_graph}
-
 # make a graph
-
-ggplot(mack_creek_e, aes(x = unittype, y = weight)) +
-  geom_beeswarm(aes(color = unittype),
+ggplot() +
+  geom_beeswarm(data = mack_creek_e,
+                aes(x = unittype, 
+                    y = weight,
+                    color = unittype),
               width = 0.2,
-              alpha = 0.7,
+              alpha = 0.5,
               show.legend = FALSE) +
   theme_light() +
-  labs(y = "Weight",
-       x = "Location",
-       subtitle = "2017") + 
-  scale_x_discrete(labels = c("C"="Cascade","P"="Pool","SC"="Side Channel"))+
+  labs(y = "Weight (g)",
+       x = "Location") + 
   geom_point(data = channel_summary_table,
              aes(x = unittype,
                  y = mean),
-             size = 1,
-             show.legend = FALSE)
+             color = "grey30",
+             size = 3,
+             show.legend = FALSE)+
+  geom_errorbar(data = channel_summary_table,
+                aes(x = unittype,
+                    ymin = mean - sd,
+                    ymax = mean + sd),
+                color = "grey30",
+                width = 0.1)+
+  scale_color_manual(values = c("#009E73", "#0072B2", "#CC79A7") )
 
 ```
+***Figure. 3*** *Data: .*
 
 - Second, answer: is there a significant difference in mean weights for Pacific giant salamanders observed in pools vs. cascades vs. side-channels in 2017? 
 
-```{r result_e_density_graph}
-# density graph
-
-ggplot(mack_creek_e, aes(x = weight)) +
-  geom_density(aes(fill = unittype, color = unittype), alpha = 0.3) +
-  theme_minimal() +
-  theme(legend.position = c(0.75, 0.6)) +
-  geom_vline(data = channel_summary_table,
-             aes(xintercept = mean,
-                 colour = unittype),
-             linetype = "dashed",
-             size = 1,
-             show.legend = FALSE)
-
-```
 
 ```{r result_e_check_variance}
 
 # check variances
+channel_summary_table %>% 
+  kable(col.names = c("Channel", "Mean","Standard Deviation","Standard Error","Variance", "Sample Size"),
+        align = "cccccc",
+        digits = 2
+        ) %>% 
+  kable_styling(bootstrap_options = "striped", 
+                full_width = F,
+                position = "center",
+                row_label_position = c
+                )%>% 
+  add_header_above(c("Channel mean weight (g) Summary Table" = 6))
 
-e_summary <- mack_creek_e %>% 
-  group_by(unittype) %>% 
-  summarize(
-    w_mean = mean(weight, na.rm = TRUE),
-    w_se = sd(weight, na.rm = TRUE) / sqrt(n()),
-    w_var = var(weight, na.rm = TRUE)
-  )
-
-# largest variance (Pool) (185.58), smallest variance (Side-Channel) (68.31)
 ```
+
+largest variance (Pool) (185.58), smallest variance (Side-Channel) (68.31)
 
 ```{r result_e_levene_test}
 # Levene's statistical test for equal variance:
@@ -313,22 +325,18 @@ levene_test_e <- leveneTest(weight ~ unittype, data = mack_creek_e)
 aov_e <- aov(weight ~ unittype, data = mack_creek_e)
 
 # There is significant difference in means across groups.
-```
 
-```{r result_e_tukey}
 # run post-hoc Tukey's
 
 post_hoc_e <- TukeyHSD(aov_e)
 
 # SC-P is significantly different. 
-```
 
-```{r result_e_report_outcomes}
 # reporting outcomes
 
 aov_e_outcomes <- unlist(summary(aov_e))
-
 ```
+
 
 Of the three groups, mean salamander weight differed significantly between side-channels and pools (one-way ANOVA with post-hoc Tukey's HSD, F(`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7],2)`, *p* = `r round(aov_e_outcomes[9],3)`).
 
