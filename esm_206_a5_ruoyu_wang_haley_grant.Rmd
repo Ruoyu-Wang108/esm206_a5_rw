@@ -30,14 +30,17 @@ Photo by Jeffrey Marsten. [Wikipedia](https://commons.wikimedia.org/wiki/File:Di
 
 #### Results
 
-Results A: Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
+##### Results A
+
+Visually compare annual salamander counts in old growth (OG) and clear cut (CC) sections of Mack Creek. 
 
 ```{r}
 
 # Read in data
 
 mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>% 
-  clean_names()
+  clean_names() %>% 
+  filter(species == "DITE")
 
 ```
 
@@ -46,11 +49,8 @@ mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>%
 # Data wrangling
 
 mack_creek_a <- mack_creek_df %>% 
-  filter(year > 1992) %>%
-  filter(species == "DITE") %>% 
   group_by(year, section) %>% 
-  summarize(annual_count <- sum(!is.na(species))) %>% 
-  rename(total_count = "annual_count <- sum(!is.na(species))")
+  summarize(total_count = n())
 
 ```
 
@@ -58,12 +58,9 @@ mack_creek_a <- mack_creek_df %>%
 
 # Create a finalized graph
 
-ggplot(mack_creek_a, aes(x = year, y = total_count, color = section)) +
-  geom_point(alpha = 0.5) +
+ggplot(mack_creek_a, aes(x = year, y = total_count, color = section, pch = section)) +
+  geom_point() +
   geom_line(alpha = 0.3) +
-  geom_smooth(method = "lm",
-              size = 0.6,
-              alpha = 0) +
   theme_light() +
   labs(title = "Annual salamander counts in old growth vs. clear cut sections of Mack Creek",
        x = "Year",
@@ -96,48 +93,20 @@ Table of 2017 salamander counts by channel classification (pool, cascades and si
 
 Results B: Table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
 
-
-```{r}
-# Data wrangling
-
-mack_creek_b <- mack_creek_df %>% 
-  filter(year == 2017) %>% 
-  filter(species == "DITE") %>% 
-  filter(unittype %in% c("C", "SC", "P")) %>% 
-  select("year", "section", "unittype", "species") %>% 
-  group_by(year, section, unittype) %>% 
-  summarise(count = sum(!is.na(species))) %>%
-  group_by(year) %>% 
-  mutate(proportion = round(count/sum(count), digits = 2))
-```
-
-```{r}
-# Make a table
-
-mack_creek_b %>% 
-  kable(col.names = c("Year",
-  "Section", 
-                     "Channel",
-                     "Count",
-                     "Proportion")) %>% 
-  kable_styling(bootstrap_options = "striped", 
-                full_width = F,
-                position = "left"
-                ) %>% 
-  add_header_above(c("Salamander counts by channel classification" = 5))
-```
-
-
 ```{r ruoyu_result_b}
 # find the counts of 
 salam_channel_count <- mack_creek_df %>% 
   filter(unittype %in% c("C", "P", "SC")) %>% 
-  filter(species == "DITE") %>% 
   filter(year == "2017") %>% 
   group_by(unittype, section) %>% 
   summarize(
     count = n()
-  )
+  ) %>% 
+  mutate(section = ifelse(
+    section == "OG",
+    "Old Growth",
+    "Clear Cut"
+  ))
 
 channel_section_table <- salam_channel_count %>% 
   pivot_wider(names_from = unittype, values_from = count) 
@@ -147,14 +116,6 @@ channel_section_props <- channel_section_table %>%
   # not sure the denomincator should be the column or the row
   adorn_pct_formatting(digits = 0) %>% 
   adorn_ns(position = "front") 
-
-# rownames("channel_section_table$section")
-# rownames<-(c("Clear Cut", "Old Growth"))
-# Creat facets labels in advance.
-# table_row_labs <- c("Clear Cut", "Old Growth")
-# names(table_row_labs) <- c("CC","OG")
-
-#rowrename(channel_section_table,"CC"="Clear Cut", "OG"="Old Growth")
 
 channel_section_props %>% 
   kable(
@@ -167,11 +128,9 @@ channel_section_props %>%
   add_header_above(c("Salamander counts by channel and sections clasification in 2017" = 4))
 ```
 
-Answer: The majority of Salamanders in 2017 were found in cascades in clear cut sections of the forrest. The next place Salamanders were found the most was in cascades in old growth forests. It appears that salamanders prefer cascades to other location types. 
-
 ##### Results C
 
-Results C: Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
+Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
 
  chi square: compare proportions
 
@@ -201,23 +160,8 @@ my_salam_chi
 Result: the channel location and two sections are independent. 
 Since p > 0.05, we retain the null hypothesis that channel locations and sampling sections are independent. In other words: "There are no significant differences in forest condition (clear cut / old growth) based on where in the channels salamanders are found ($\chi$^2^(`r my_salam_chi$parameter`) = `r round(my_salam_chi$statistic,2)`, *p* (`r round(my_salam_chi$p.value,3)`) > 0.05)."
 
-```{r}
-OG <- c(201, 45,74)
-CC <- c(247, 31, 90)
-df_b <- rbind(OG, CC)
-colnames(df_b) <- c("Cascade", "Pool", "Side-Channel")
+##### Results D
 
-chisq_b <- chisq.test(df_b)
-
-# P-value is greater than our alpha 0.05, so we fail to reject the null hypothesis. We assume there is no associated between variables. The difference between old growth and clear cut forrests didn't change the locations of salamanders.
-
-```
-
-
-Channel preference does not differ significantly for salamanders in Old Growth (OG) and Clear Cut (CC) forests ($\chi$^2^(`r chisq_b$parameter`) = `r round(chisq_b$statistic, 2)`, *p* = `r round(chisq_b$p.value, 2)`). 
-
-
-##### Results D: 
 Only considering creek section (OG or CC) as a variable (not further factoring by channel classification), answer: Is there a significant difference in mean weights for Pacific giant salamanders observed in the two forest sections (CC and OG) in 2017?
 
 ```{r}
@@ -284,31 +228,21 @@ ggplot(mack_creek_e, aes(x = unittype, y = weight)) +
   theme_light() +
   labs(y = "Weight",
        x = "Location",
-       title = "Salamander weights by location (2017)") + 
+       title = "Salamander weights by location",
+       subtitle = "2017") + 
   scale_x_discrete(labels = c("C"="Cascade","P"="Pool","SC"="Side Channel"))
 ```
 
 - Second, answer: is there a significant difference in mean weights for Pacific giant salamanders observed in pools vs. cascades vs. side-channels in 2017? 
 
 ```{r}
-
-# explore data (histogram)
+# density graph
 
 ggplot(mack_creek_e, aes(x = weight)) +
-  geom_histogram() +
-  facet_wrap(~unittype) +
-  theme_light()
+  geom_density(aes(fill = unittype, color = unittype), alpha = 0.3) +
+  theme_minimal() +
+  theme(legend.position = c(.75, .6))
 
-```
-
-```{r}
-
-# explore data (qq plot)
-
-ggplot(mack_creek_e, aes(sample = weight)) +
-  geom_qq() +
-  facet_wrap(~unittype, scales = "free") +
-  theme_light()
 ```
 
 ```{r}
@@ -322,12 +256,16 @@ e_summary <- mack_creek_e %>%
     w_se = sd(weight, na.rm = TRUE) / sqrt(n()),
     w_var = var(weight, na.rm = TRUE)
   )
+
+e_summary 
 ```
 
 ```{r}
 # Levene's statistical test for equal variance:
 
 levene_test_e <- leveneTest(weight ~ unittype, data = mack_creek_e)
+
+levene_test_e
 
 # not significant, retain null hypothesis
 ```
@@ -337,7 +275,8 @@ levene_test_e <- leveneTest(weight ~ unittype, data = mack_creek_e)
 
 aov_e <- aov(weight ~ unittype, data = mack_creek_e)
 
-# there is not a significant difference among groups
+summary(aov_e)
+
 ```
 
 ```{r}
