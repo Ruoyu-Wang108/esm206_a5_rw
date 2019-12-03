@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = "center")
 
 library(tidyverse)
 library(janitor)
@@ -170,7 +170,6 @@ Only considering creek section (OG or CC) as a variable (not further factoring b
 
 mack_creek_d <- mack_creek_df %>%
   filter(year == 2017) %>% 
-  filter(species == "DITE") %>% 
   select(section, weight) 
 
 ```
