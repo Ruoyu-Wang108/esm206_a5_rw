@@ -67,26 +67,6 @@ ggplot(mack_creek_a, aes(x = year, y = total_count, color = section, pch = secti
        y = "Total Count") 
 ```
 
-
-```{r ruoyu_result_a}
-# Find the counts of pacific giant salamander at OG and CC
-salam_count <- mack_creek_df %>% 
-  filter(species == "DITE") %>% 
-#  filter(!notes == "Recap") %>% whether to minus these data or not
-  group_by(year, section) %>% 
-  summarize(
-    count = n()
-  )
-
-# visualize the results
-ggplot(data = salam_count)+
-  geom_col(position = "dodge", 
-           aes(x = year, y = count, fill = section), 
-           alpha = 0.8,
-           width = 0.8)+
-  geom_line(aes(x = year, y = count, color = section))
-```
-
 ##### Results B
 
 Table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
@@ -149,9 +129,7 @@ Is there a significant difference in where in the channel Pacific giant salamand
 
  Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
 
-
-
-```{r}
+```{r, include = FALSE}
 # Chi-square test for independence
 
 # A. First, get just a contingency table of counts we just want the four count values in a df, nothing else: 
@@ -250,7 +228,7 @@ ggplot(mack_creek_e, aes(x = weight)) +
 
 ```
 
-```{r}
+```{r, include = FALSE}
 
 # check variances
 
@@ -262,10 +240,10 @@ e_summary <- mack_creek_e %>%
     w_var = var(weight, na.rm = TRUE)
   )
 
-e_summary 
+e_summary # largest variance (Pool) (185.58), smallest variance (Side-Channel) (68.31)
 ```
 
-```{r}
+```{r, include = FALSE}
 # Levene's statistical test for equal variance:
 
 levene_test_e <- leveneTest(weight ~ unittype, data = mack_creek_e)
@@ -275,31 +253,35 @@ levene_test_e
 # not significant, retain null hypothesis
 ```
 
-```{r}
+```{r, include = FALSE}
 # Run one-way ANOVA to compare group means
+
+# null hypothesis: no significant difference across groups
+# alternative hypothesis: significant difference across groups
 
 aov_e <- aov(weight ~ unittype, data = mack_creek_e)
 
-summary(aov_e)
-
+summary(aov_e) # There is significant difference in means across groups.
 ```
 
-```{r}
+```{r, include = FALSE}
 # run post-hoc Tukey's
 
 post_hoc_e <- TukeyHSD(aov_e)
 
-# none of the pair-wise functions are significantly different
+post_hoc_e
+# SC-P is significantly different. 
 ```
 
-```{r}
+```{r, include = FALSE}
 # reporting outcomes
 
 aov_e_outcomes <- unlist(summary(aov_e))
 
+aov_e_outcomes
 ```
 
-Mean weight did not differ significantly across all groups (one-way ANOVA with post-hoc Tukey's HSD, F`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7], 2)`, *p* = `r round(aov_e_outcomes[9], 3)`.
+Of the three groups, mean salamander weight differed significantly between side-channels and pools (one-way ANOVA with post-hoc Tukey's HSD, F(`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7],2)`, *p* = `r round(aov_e_outcomes[9],3)`).
 
 - Third, describe any concerns you have about comparing means across the groups.
 
