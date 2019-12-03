@@ -201,8 +201,28 @@ ggplot()+
              size = 1,
              show.legend = FALSE)+
   scale_y_discrete(expand = c(0,0)) +
-#  scale_x_continuous(limits = c(0, 25))+
   scale_color_manual(values = cbPalette) +
+  annotate("rect", xmin = 43, xmax = 67, 
+           ymin = 54, ymax = 82, 
+           fill = "white",
+           color = "grey40",
+           alpha = 0) +
+  annotate("text", x = 55, y = 78, 
+           label = "Sections", 
+           size = 6, color = "black") + 
+  annotate("text", x = 58: 58, y = c(60, 70), 
+           label = c("Clear cut", "Old growth"), 
+           size = 5, color = c("#E69F00", "#56B4E9")) +  
+  annotate("rect", xmin = 45, xmax = 50, 
+           ymin = 57, ymax = 62, 
+           fill = "#E69F00",
+           color = "#E69F00",
+           alpha = 0.4) +
+  annotate("rect", xmin = 45, xmax = 50, 
+           ymin = 67, ymax = 72, 
+           fill = "#56B4E9",
+           color = "#56B4E9",
+           alpha = 0.4) +
   theme_minimal()
 ```
 ***Figure. 4*** *Data: .*
