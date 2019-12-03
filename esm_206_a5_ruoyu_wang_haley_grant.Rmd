@@ -289,6 +289,25 @@ Mean is a measurement that is easily swayed by outliers, and it looks like the d
 Gregory S. V. 2016. Aquatic Vertebrate Population Study in Mack Creek, Andrews Experimental Forest, 1987 to present. Environmental Data Initiative. https://doi.org/10.6073/pasta/5de64af9c11579266ef20da2ff32f702.
 
 
+Results D. Compare weights of Pacific giant salamanders in clear cut and old growth forest sections of the creek in 2017. Only considering creek section (OG or CC) as a variable (not further factoring by channel classification), answer: Is there a significant difference in mean weights for Pacific giant salamanders observed in the two forest sections (clear cut and old growth) in 2017? 
 
+```{r ruoyu_result_d}
+salam_d <- mack_creek_df %>%
+  filter(year == 2017) %>% 
+  filter(section %in% c("CC","OG")) 
+
+forest_summary_table <- salam_d %>% 
+  group_by(section) %>% 
+  summarize(
+    mean = mean(weight, na.rm = TRUE),
+    sd = sd(weight, na.rm = TRUE),
+    count = n(),
+    se = sd(weight, na.rm = TRUE) / sqrt(n()),
+    var = var(weight, na.rm = TRUE)
+  )
+forest_summary_table
+
+
+```
 
 
