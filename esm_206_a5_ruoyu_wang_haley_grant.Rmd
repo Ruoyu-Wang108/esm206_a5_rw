@@ -39,13 +39,14 @@ This report compares the weights and abundance of Pacific giant salamanders in M
 This report compares the weights and abundance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut and Old Growth forests. The Clear Cut sections were cut down around 1963, and the Old Growth coniferous forest is around 500 years old. Data related to their locations within Mack Creek is also studied. Within the two sections of forests, salamanders are found in Cascades, Pools and Side-Channels. Salamanders found in Isolated Pools were not included in this report, as they the pools are separated from the channel. We are only interested in salamanders found in the creek.  
 
 ```{r  out.width = "60%"}
-include_graphics("Dicamptodon_tenebrosus_2.JPG") 
+knitr::include_graphics("Dicamptodon_tenebrosus_2.JPG") 
 ```
 
 ***Figure. 1*** *Pacific giant salamander (Dicamptodon tenebrosus). Credit: Jeffrey Marsten. [Wikipedia](https://commons.wikimedia.org/wiki/File:Dicamptodon_tenebrosus_2.JPG).*
 
 ### Data and Methods
 
+google earth pro
 The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the study "Aquatic Vertebrate Population Study in Mack Creek," by authors Stanley V. Gregory and the Andrews Forest LTER Site. The study monitored populations of West Slope cutthroat trout (Onchorhyncus clarki clarki) since 1987, as well as Pacific giant salamanders (Dicamptodon tenebrosus) beginning in 1993. This report visualizes annual counts of salamanders between Clear Cut and Old Growth sections from 1987 to present to show changes in populations. We used Chi-Square tests, t-tests, as well as One-Way ANOVA tests to determine if there were significant differences in counts or weights of salamanders across sections (Clear Cut or Old Growth) or locations (Cascades, Pools or Side-Channels).      
 
 ```{r  out.width = "60%"}
@@ -59,6 +60,8 @@ include_graphics("mack_creek_map_3.png")
 ### Results
 
 #### A. Annual salamander population in two forest sections of Mack Creek. 
+
+From 2012 to 2018, the total amount of Pacific giant salamanders has changed in different trends in two different forest sections: clear cut and old growth area  (Figure.3).
 
 ```{r compare_counts_sections}
 # Find the counts of pacific giant salamander at OG and CC
@@ -81,15 +84,16 @@ ggplot(data = mack_creek_a,
   geom_line(show.legend = FALSE,
              width = 1) +
   labs(x = "Year",
-       y = "Total Count")+
+       y = "Annual population in forest setions")+
   annotate("text", 
-           x = 2016:2016, 
-           y = c(380, 155), 
+           x = c(2018.5,2019), 
+           y = c(380, 335), 
            label = c("Clear Cut", "Old Growth"),
            color = c("#E69F00", "#56B4E9"),
            fontface =2)+
   scale_color_manual(values = cbPalette) +
-  scale_x_discrete(breaks = c(1995, 2000, 2005, 2010, 2015, 2017))+
+  scale_x_continuous(limits  = c(1993,2019.5),
+                     breaks = c(1993, 1998, 2003, 2008, 2013, 2017))+
   theme_minimal() 
 
 ```
@@ -140,7 +144,7 @@ channel_section_props %>%
 
 ```
 
-#### C. Co-effect of channel classification and forest sections on mean salamanders weights.
+#### C. Association between channel classifications and forest sections on mean salamanders weights.
 
 Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
 
@@ -181,9 +185,7 @@ forest_summary_table <- mack_creek_d %>%
   summarize(
     mean = mean(weight, na.rm = TRUE),
     sd = sd(weight, na.rm = TRUE),
-    count = n(),
-    se = sd(weight, na.rm = TRUE) / sqrt(n()),
-    var = var(weight, na.rm = TRUE)
+    count = n()
   )
 
 # Visulize the two groups of data
@@ -221,7 +223,7 @@ section_d <- effsize::cohen.d(data = mack_creek_d, weight~section, na.rm = TRUE)
 
 ```
 
-In year 2017, mean weight of Pacific giant salamanders (g) measured in clear cut forests (`r round(forest_summary_table$mean[1], 2)` $\pm$ `r round(forest_summary_table$sd[1], 2)`, n = `r forest_summary_table$count[1]`) did not have significant difference from the average salam weight in old growth froest areas (`r round(forest_summary_table$mean[2], 2)` $\pm$ `r round(forest_summary_table$sd[2], 2)`, n = `r forest_summary_table$count[2]`) by a unpaired two-sample t-test (t(`r round(sectiont_ttest$parameter, 2)`) = `r round(sectiont_ttest$statistic, 2)`, *p*(`r round(sectiont_ttest$p.value, 3)`) > 0.05). The difference in mean weight between the two groups is 1.20 mm, with a negligible effect size (Cohen's d = `r round(section_d$estimate, 2)`). Therefore, we consider the salam weights in clear cut areas were not significantly different from old growth ones. Density presented in Figure.2.
+In year 2017, mean weight of Pacific giant salamanders (g) measured in clear cut forests (`r round(forest_summary_table$mean[1], 2)` $\pm$ `r round(forest_summary_table$sd[1], 2)`, n = `r forest_summary_table$count[1]`) did not have significant difference from the average salam weight in old growth froest areas (`r round(forest_summary_table$mean[2], 2)` $\pm$ `r round(forest_summary_table$sd[2], 2)`, n = `r forest_summary_table$count[2]`) by a unpaired two-sample t-test (t(`r round(sectiont_ttest$parameter, 2)`) = `r round(sectiont_ttest$statistic, 2)`, *p*(`r round(sectiont_ttest$p.value, 3)`) > 0.05). The difference in mean weight between the two groups is 1.20 mm, with a negligible effect size (Cohen's d = `r round(section_d$estimate, 2)`). Therefore, we consider the salam weights in clear cut areas were not significantly different from old growth ones. Histogram presented in Figure.2.
 
  
 #### E. The influence of channel classfications on Pacific giant salamanders weights.
@@ -263,25 +265,32 @@ ggplot() +
               width = 0.2,
               alpha = 0.5,
               show.legend = FALSE) +
-  theme_light() +
   labs(y = "Weight (g)",
-       x = "Location") + 
-  geom_point(data = channel_summary_table,
+       x = "Channel classifications") + 
+  geom_errorbar(data = channel_summary_table,
+                aes(x = unittype,
+                    ymin = mean - sd,
+                    ymax = mean + sd),
+                color = "grey35",
+                size = 0.7,
+                width = 0.1)+
+    geom_point(data = channel_summary_table,
              aes(x = unittype,
                  y = mean),
              color = "grey30",
              size = 3,
              show.legend = FALSE)+
-  geom_errorbar(data = channel_summary_table,
-                aes(x = unittype,
-                    ymin = mean - sd,
-                    ymax = mean + sd),
-                color = "grey30",
-                width = 0.1)+
-  scale_color_manual(values = c("#009E73", "#0072B2", "#CC79A7") )
+  geom_hline(data = channel_summary_table, 
+             aes(yintercept = mean,
+                 colour = unittype),
+             linetype = "dashed",
+             size = 0.6,
+             show.legend = FALSE)+
+  scale_color_manual(values = c("#009E73", "#0072B2", "#CC79A7"))+
+  theme_minimal()
 
 ```
-***Figure. 5*** *Data: .*
+***Figure. 5*** *The grey points showed the mean weights within each channel groups, the error bar indicates the standard diviation of the data. Data: .*
 
 **2. Is there a significant difference in mean weights for Pacific giant salamanders observed in pools vs. cascades vs. side-channels in 2017?**
 
