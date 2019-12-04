@@ -33,7 +33,7 @@ mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>%
 
 ### Introduction
 
-This report compares the weights and abundance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut (c. 1963) and 500-year-old coniferous Old Growth forests. Within the two sections of forests, salamanders are found in Cascades, Pools and Side-Channels. We wanted to see where salamanders are found the most, and if the section of Forrest- Clear Cut or Old Growth- has an affect on their location. This report does not include Salamanders found in Isolated Pools, as these areas are separated from the creek and not the focus of this report.
+This report compares the weights and abundance of Pacific giant salamanders in Mack Creek (near Blue River, Oregon). The area is composed of Clear Cut (c. 1963) and 500-year-old coniferous Old Growth forests. Within the two sections of forests, salamanders are found in Cascade, Pool and Side Channel. We wanted to see where salamanders are found the most, and if the section of Forrest- Clear Cut or Old Growth- has an affect on their location. This report does not include Salamanders found in Isolated Pool, as these areas are separated from the creek and not the focus of this report.
 
 --> add why studying this is important
 
@@ -45,7 +45,7 @@ knitr::include_graphics("Dicamptodon_tenebrosus_2.JPG")
 
 ### Data and Methods
 
-The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the study "Aquatic Vertebrate Population Study in Mack Creek," by authors Stanley V. Gregory and the Andrews Forest LTER Site. The study monitored populations of West Slope cutthroat trout (Onchorhyncus clarki clarki) since 1987, as well as Pacific giant salamanders (Dicamptodon tenebrosus) beginning in 1993. This report uses their data to visualize annual counts of salamanders between Clear Cut and Old Growth sections from 1987 to present to show changes in populations. We used Chi-Square, t-test, as well as One-Way ANOVA to determine if there were significant differences in counts or weights of salamanders across sections (Clear Cut or Old Growth) and channel classifications (Cascades, Pools or Side-Channels).      
+The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the study "Aquatic Vertebrate Population Study in Mack Creek," by authors Stanley V. Gregory and the Andrews Forest LTER Site. The study monitored populations of West Slope cutthroat trout (Onchorhyncus clarki clarki) since 1987, as well as Pacific giant salamanders (Dicamptodon tenebrosus) beginning in 1993. This report uses their data to visualize annual counts of salamanders between Clear Cut and Old Growth sections from 1987 to present to show changes in populations. We used Chi-Square, t-test, as well as One-Way ANOVA to determine if there were significant differences in counts or weights of salamanders across sections (Clear Cut or Old Growth) and channel classifications (Cascade, Pool or Side Channel).      
 
 ```{r  out.width = "60%"}
 include_graphics("mack_creek_map_3.png") 
@@ -81,7 +81,7 @@ ggplot(data = mack_creek_a,
   geom_line(show.legend = FALSE,
              width = 1) +
   labs(x = "Year",
-       y = "Annual population in forest setions")+
+       y = "Annual population in forest sections")+
   annotate("text", 
            x = c(2018.5,2019), 
            y = c(380, 335), 
@@ -98,12 +98,12 @@ ggplot(data = mack_creek_a,
 
 #### B. Salamander abundance by channel classification and forest sections in 2017.
 
-Table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
+Table of 2017 salamander counts by channel classification (Pool, Cascade and Side Channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
 
-***Table. 1*** *Summary table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek. Data: .* 
+***Table. 1*** *Summary table of 2017 salamander counts by channel classification (Pool, Cascade and Side Channel) in old growth (OG) and clear cut (CC) sections of Mack Creek. Data: .* 
 
 ```{r b_props_table}
-# Find the counts of salamander by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek in year 2017.
+# Find the counts of salamander by channel classification (Pool, Cascade and Side Channel) in old growth (OG) and clear cut (CC) sections of Mack Creek in year 2017.
 salam_channel_count <- mack_creek_df %>% 
   filter(unittype %in% c("C", "P", "SC")) %>% 
   filter(year == "2017") %>% 
@@ -131,7 +131,7 @@ channel_section_props <- channel_section_table %>%
 # Put the results in a nice kable.
 channel_section_props %>% 
   kable(
-    col.names = c("Section", "Cascades","Pool", "Side Channel"),
+    col.names = c("Section", "Cascade","Pool", "Side Channel"),
     align = "cccc"
   ) %>% 
   kable_styling(bootstrap_options = "striped", 
@@ -143,7 +143,7 @@ channel_section_props %>%
 
 #### C. Association between channel classifications and forest sections on mean salamanders weights.
 
-Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
+Is there a significant difference in where in the channel Pacific giant salamanders are located (Pool, cascade or side channel) between the two sections (old growth and clear cut)? 
 
 We use chi square test to compare proportions.
 
@@ -163,8 +163,8 @@ my_salam_chi <- chisq.test(salam_chi_counts)
 
 ```
 
-the channel location and two sections are independent. 
-Since p > 0.05, we retain the null hypothesis that channel locations and sampling sections are independent. In other words: "There are no significant differences in forest condition (clear cut / old growth) based on where in the channels salamanders are found ($\chi$^2^(`r my_salam_chi$parameter`) = `r round(my_salam_chi$statistic,2)`, *p* (`r round(my_salam_chi$p.value,3)`) > 0.05)."
+
+Since p > 0.05, we retain the null hypothesis that channel locations and sampling sections are independent. We could conclude that the channel location and two sections are independent. In other words: "There are no significant differences in forest condition (clear cut / old growth) based on where in the channels salamanders are found ($\chi$^2^(`r my_salam_chi$parameter`) = `r round(my_salam_chi$statistic,2)`, *p* (`r round(my_salam_chi$p.value,3)`) > 0.05)."
 
 #### D. The influence of forest sections on Pacific giant salamanders weights.
 
@@ -241,9 +241,9 @@ section_d <- effsize::cohen.d(data = mack_creek_d, weight~section, na.rm = TRUE)
 
 ```
 
-In year 2017, mean weight of Pacific giant salamanders (g) measured in clear cut forests (`r round(forest_summary_table$mean[1], 2)` $\pm$ `r round(forest_summary_table$sd[1], 2)`, n = `r forest_summary_table$count[1]`) did not have significant difference from the average salamander weight in old growth froest areas (`r round(forest_summary_table$mean[2], 2)` $\pm$ `r round(forest_summary_table$sd[2], 2)`, n = `r forest_summary_table$count[2]`) by a unpaired two-sample t-test (t(`r round(sectiont_ttest$parameter, 2)`) = `r round(sectiont_ttest$statistic, 2)`, *p*(`r round(sectiont_ttest$p.value, 3)`) > 0.05). The difference in mean weight between the two groups is 1.20 mm, with a negligible effect size (Cohen's d = `r round(section_d$estimate, 2)`). Therefore, we consider the salamander weights in clear cut areas were not significantly different from old growth ones. Histogram presented in Figure.2.
+In year 2017, mean weight of Pacific giant salamanders (g) measured in clear cut forests (`r round(forest_summary_table$mean[1], 2)` $\pm$ `r round(forest_summary_table$sd[1], 2)`, n = `r forest_summary_table$count[1]`) did not have significant difference from the average salamander weight in old growth forest areas (`r round(forest_summary_table$mean[2], 2)` $\pm$ `r round(forest_summary_table$sd[2], 2)`, n = `r forest_summary_table$count[2]`) by a unpaired two-sample t-test (t(`r round(sectiont_ttest$parameter, 2)`) = `r round(sectiont_ttest$statistic, 2)`, *p*(`r round(sectiont_ttest$p.value, 3)`) > 0.05). The difference in mean weight between the two groups is 1.20 mm, with a negligible effect size (Cohen's d = `r round(section_d$estimate, 2)`). Therefore, we consider the salamander weights in clear cut areas were not significantly different from old growth ones. Histogram presented in Figure.2.
 
-#### E. The influence of channel classfications on Pacific giant salamanders weights.
+#### E. The influence of channel classifications on Pacific giant salamanders weights.
 
 ```{r e_df_sumtable}
 
@@ -309,22 +309,22 @@ ggplot() +
   coord_flip()
 
 ```
-***Figure. 5*** *The grey points showed the mean weights within each channel groups, the error bar indicates the standard diviation of the data. Data: .*
+***Figure. 5*** *The grey points showed the mean weights within each channel groups, the error bar indicates the standard deviation of the data. Data: .*
 
-**2. Is there a significant difference in mean weights for Pacific giant salamanders observed in pools vs. cascades vs. side-channels in 2017?**
+**2. Is there a significant difference in mean weights for Pacific giant salamanders observed in Pool vs. Cascade vs. Side Channel in 2017?**
 
 We adopted the one-way analysis of variance (ANOVA) to solve that problem. 
 
-First, we made our hypothesises. 
-Null Hypothesis (H0): The mean weights of Pacific giant salamanders from pools, cascades, and side channels are the same. Alternative Hypothesis (HA): At least two group means are NOT equal.
+First, we made our hypothesizes. 
+Null Hypothesis (H0): The mean weights of Pacific giant salamanders from Pool, Cascade, and Side Channel are the same. Alternative Hypothesis (HA): At least two group means are NOT equal.
 
-Second, we check whether the data satisify the assumptions for ANOVA: 
+Second, we check whether the data satisfy the three assumptions for ANOVA: 
 
-1) The sample distribution should be normal. Through the beeswarm plot we could observe that most weights were concentrated at 0-6g. The data was presented as stew to the left side. However, the sample sizes within each groups (pools=`r channel_summary_table$count[2]`, cascades=`r channel_summary_table$count[1]`), and side channel=`r channel_summary_table$count[3]`) are all more than 30, which could be considered as large enough. So the distributions of the sample statistics will be normally distributed.
+a) The sample distribution should be normal. Through the beeswarm plot we could observe that most weights were concentrated at 0-6g. The data was presented as stew to the left side. However, the sample sizes within each groups (Pool - `r channel_summary_table$count[2]`, Cascade - `r channel_summary_table$count[1]`, and Side channel - `r channel_summary_table$count[3]`) are all more than 30, which could be considered as large enough. So the distributions of the sample statistics (mean, median) will be normally distributed.
 
-2) Samples are independent. Due to the different locations of these three channels, the sample data collected from different places should be independent.
+b) Samples are independent. Due to the different locations of these three channels, the sample data collected from different places should be independent.
 
-3) Population variances are equal. 
+c) Population variances are equal. In the summary table, notice that the largest variance (Pool - `r round(channel_summary_table$var[2], 2)`) is less than the four times of the smallest variance (Side Channel - `r round(channel_summary_table$var[3], 2)`), which means the variances are close enough. Besides, through the levene_test
 
 
 ```{r e_channel_kable}
@@ -344,7 +344,7 @@ channel_summary_table %>%
 
 ```
 
-largest variance (Pool) (185.58), smallest variance (Side-Channel) (68.31). The largest variance needs to be smaller than at least 4 times the smallest variance to be considered close enough.  
+
 
 ```{r e_levene_test}
 # Levene's statistical test for equal variance:
@@ -378,7 +378,7 @@ aov_e_outcomes <- unlist(summary(aov_e))
 ```
 
 
-Of the three groups, mean salamander weight differed significantly between side channels and pools (one-way ANOVA with post-hoc Tukey's HSD, F(`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7],2)`, *p* = `r round(aov_e_outcomes[9],3)`).
+Of the three groups, mean salamander weight differed significantly between Side Channel and Pool (one-way ANOVA with post-hoc Tukey's HSD, F(`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7],2)`, *p* = `r round(aov_e_outcomes[9],3)`).
 
 ```{r effect_size_cohens_d}
 # pairwise cohen's d tests
@@ -386,20 +386,20 @@ Of the three groups, mean salamander weight differed significantly between side 
 # compairing Side Channel - Pool
 # filter channels
 
-side_channel_pool_e <- mack_creek_e %>%
+side_channel_Pool_e <- mack_creek_e %>%
   filter(unittype %in% c("Pool", "Side Channel"))
 
 # cohen's d test
 
-cohen_d_side_channel_pool <- cohen.d(data = side_channel_pool_e, weight~unittype)
+cohen_d_side_channel_Pool <- cohen.d(data = side_channel_Pool_e, weight~unittype)
 
-cohen_d_side_channel_pool
+cohen_d_side_channel_Pool
 ```
 
 The effect size was small between Side Channel and Pool samples: .
 
 
-The actual difference of mean weights between salamanders found in Pools and salamanders equals
+The actual difference of mean weights between salamanders found in Pool and salamanders equals
 
 **3. Limits about comparing means across the groups.**
 
