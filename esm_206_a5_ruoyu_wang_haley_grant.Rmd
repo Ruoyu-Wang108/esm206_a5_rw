@@ -359,10 +359,7 @@ levene_e <- leveneTest(weight ~ unittype, data = mack_creek_e)
 
 We adopted the one-way analysis of variance (ANOVA) to solve that problem. 
 
-First, we made our hypothesizes. 
-Null Hypothesis: The mean weights of Pacific giant salamanders from Pool, Cascade, and Side Channel are the same. Alternative Hypothesis: At least two group means are NOT equal.
-
-Second, we check whether the data satisfy the three assumptions for ANOVA: 
+This method is suitable because the data satisfies all assumptions for ANOVA: 
 
 a) The sample distribution should be normal. Through the beeswarm plot we could observe that most weights were concentrated at 0-6g. The data was presented as stew to the left side. However, the sample sizes within each groups (Pool - `r channel_summary_table$count[2]`, Cascade - `r channel_summary_table$count[1]`, and Side channel - `r channel_summary_table$count[3]`) are all more than 30, which could be considered as large enough. So the distributions of the sample statistics (mean, median) will be normally distributed.
 
@@ -370,11 +367,7 @@ b) Samples are independent. Due to the different locations of these three channe
 
 c) Population variances are equal. In the summary table (Table.2), notice that the largest variance (Pool - `r round(channel_summary_table$var[2], 2)`) is less than the four times of the smallest variance (Side Channel - `r round(channel_summary_table$var[3], 2)`), which means the variances are close enough. Besides, based on the results from Levene's Test (Levene's F(`r round(levene_e[[1,1]], 2)`) = `r round(levene_e[[1,2]], 2)`, *p* = `r round(levene_e[[1,3]], 3)` > 0.05), there is no significant difference in variances between groups.
 
-Therefore, the ANOVA analysis is suitable for this question.
-
 ```{r e_anova}
-# Run one-way ANOVA to compare group means
-
 # null hypothesis: no significant difference across groups
 # alternative hypothesis: significant difference across groups
 
@@ -392,30 +385,20 @@ post_hoc_e <- TukeyHSD(aov_e)
 
 aov_e_outcomes <- unlist(summary(aov_e))
 ```
-
-
-Of the three groups, mean salamander weight differed significantly between Side Channel and Pool (one-way ANOVA with post-hoc Tukey's HSD, F(`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7],2)`, *p* = `r round(aov_e_outcomes[9],3)`).
+In 2017, mean weight of Pacific giant salamanders (g) measured in Cascade area (`r round(channel_summary_table$mean[1], 2)` $\pm$ `r round(channel_summary_table$sd[1], 2)`, n = `r channel_summary_table$count[1]`)，in Pool area (`r round(channel_summary_table$mean[2], 2)` $\pm$ `r round(channel_summary_table$sd[2], 2)`, n = `r channel_summary_table$count[2]`), and in Side Channel area (`r round(channel_summary_table$mean[3], 2)` $\pm$ `r round(channel_summary_table$sd[3], 2)`, n = `r channel_summary_table$count[3]`) have significant difference in at least two groups from the average salamander weight by a one-way ANOVA (F(`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7],2)`, *p*(`r round(aov_e_outcomes[9],3)`) < 0.05). Histogram presented in Figure.4.
 
 ```{r effect_size_cohens_d}
-# pairwise cohen's d tests
-
-# compairing Side Channel - Pool
-# filter channels
-
-side_channel_Pool_e <- mack_creek_e %>%
+# pairwise cohen's d tests, compairing Side Channel - Pool, filter channels
+scp_e <- mack_creek_e %>%
   filter(unittype %in% c("Pool", "Side Channel"))
 
 # cohen's d test
+cohen_d_scp <- cohen.d(data = scp_e, weight~unittype)
 
-cohen_d_side_channel_Pool <- cohen.d(data = side_channel_Pool_e, weight~unittype)
-
-cohen_d_side_channel_Pool
 ```
 
-The effect size was small between Side Channel and Pool samples: .
-
-
-The actual difference of mean weights between salamanders found in Pool and salamanders equals
+To further which groups differ significantly with each other, we analyzed with Tukey’s test for Honestly Significant Differences (Tukey’s HSD). 
+The results showed that there is no significant difference between Pool and Cascade groups(*p adj*(`r round(post_hoc_e$unittype[1,4], 3)`) > 0.05), and between Side Channel and Cascade groups (*p adj*(`r round(post_hoc_e$unittype[2,4], 3)`) > 0.05), but the mean salamander weight differed significantly between Side Channel and Pool (*p adj*(`r round(post_hoc_e$unittype[3,4], 3)`) < 0.05). However, the difference in mean weight between the Side Channel and Pool groups is 3.62 g, with a small effect size (Cohen's d = `r round(cohen_d_scp$estimate, 2)`). Though the two groups show difference in data, it is highly possible that it happened because of accidental errors. Therefore, more researches need to be done to determine whether the two groups are actually different significantly.
 
 **3. Limits about comparing means across the groups.**
 
@@ -423,9 +406,9 @@ Mean is a measurement that is easily swayed by outliers, and it looks like the d
 
 ### Summary
 
-- 
--
--
+- channel locations and sampling sections are independent (Table.1)
+- The mean weight of salamanders in old growth and clear cut sections of the forest were not significantly different in 2017 (Figure.4).
+- Within three channels, the mean salamander weight differed significantly between Side Channel and Pool, but not with other groups (Figure.5).
 
 ### References 
 
