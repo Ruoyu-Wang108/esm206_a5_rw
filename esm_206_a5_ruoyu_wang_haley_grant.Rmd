@@ -48,13 +48,7 @@ knitr::include_graphics("Dicamptodon_tenebrosus_2.JPG")
 
 ### Data and Methods
 
-<<<<<<< HEAD
-The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the LTER Network Data Portal, and full metadata can be found [here](https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-and.4027.12). In the data set, sections of the forest are specified as clear cut (“CC”) and old growth (“OG”), while channel types are specified as cascade, “C”, pool, “P”, and side channel, “SC”. A Chi-Square ($\chi$^2^) test was performed to determine if forest section was a determining factor in which channel type salamanders were found. Additionally, an unpaired two-sample t-test was used to determine if the weights of salamanders differed significantly between the two forest sections. Finally, a one-way ANOVA test was conducted to determine if there was significant difference in mean salamander weight among the three channel types between the two forest sections. All analyses and figures were made using R Studio version 1.2.5001.
-=======
-
-The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the LTER Network Data Portal, and full metadata can be found [here](https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-and.4027.12). In the data set, sections of the forest are specified as clear cut (“CC”) and old growth (“OG”), while channel types are specified as cascade, “C”, pool, “P”, and side channel, “SC”. A Chi-Square ($\chi$^2) test was performed to determine if forest section was a determining factor in which channel type salamanders were found. Additionally, an unpaired two-sample t-test was used to determine if the weights of salamanders differed significantly between the two forest sections. Finally, a one-way ANOVA test was conducted to determine if there was significant difference in mean salamander weight among the three channel types between the two forest sections. All analyses and figures were made using R Studio version 1.2.5001.
->>>>>>> 792533ecda5ca036f1d84253fb5b901d98dafdab
-
+The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the LTER Network Data Portal, and full metadata can be found [here](https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-and.4027.12). Sections of the forest are specified as clear cut (“CC”) and old growth (“OG”), while channel types are specified as Cascade, “C”, Pool, “P”, and Side Channel, “SC”. A Chi-Square ($\chi$^2) test was performed to determine if forest section was a determining factor in which channel type salamanders were found. Additionally, an unpaired two-sample t-test was used to determine if the weights of salamanders differed significantly between the two forest sections. Finally, a one-way ANOVA test was conducted to determine if there was a significant difference in mean salamander weight among the three channel types between the two forest sections. All analyses and figures were made using R Studio version 1.2.5001.
 
 
 ```{r  out.width = "60%"}
@@ -114,11 +108,6 @@ Table 1 shows 2017 salamander counts by channel classification (Pool, Cascade an
 ***Table. 1*** *Summary table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek. Data: Andrews Forest LTER Site.* 
 
 
-
-```{r b_props_table}
-
-
-
 ```{r b_props_table}
 
 
@@ -164,10 +153,6 @@ channel_section_props %>%
 #### C. Association between channel classifications and forest sections on mean salamanders weights.
 
 
-
-```{r c_chi_test}
-
-
 Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
 
 We use Chi-Square ($\chi$^2^) test to compare proportions.
@@ -175,6 +160,7 @@ We use Chi-Square ($\chi$^2^) test to compare proportions.
 Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
 
 Alternative hypothesis: association between variables.
+
 
 ```{r c_chi_test}
 
@@ -338,15 +324,8 @@ ggplot() +
 
 ```
 
-<<<<<<< HEAD
+
 ***Figure. 5*** *The grey points showed the mean weights within each channel groups (Side channel - `r round(channel_summary_table$mean[3], 2)`, Pool - `r round(channel_summary_table$mean[2], 2)`, and Cascade - `r round(channel_summary_table$mean[1], 2)` ), the error bar indicates the standard diviation of the data (Side channel - `r round(channel_summary_table$sd[3], 2)`, Pool - `r round(channel_summary_table$sd[2], 2)`, and Cascade - `r round(channel_summary_table$sd[1], 2)`). Data: Andrews Forest LTER Site.*
-=======
-***Figure. 5*** *The grey points showed the mean weights within each channel groups, the error bar indicates the standard diviation of the data. Data: Andrews Forest LTER Site.*
-
-
-
->>>>>>> 792533ecda5ca036f1d84253fb5b901d98dafdab
- 
 
 
 **2. Is there a significant difference in mean weights for Pacific giant salamanders observed in Pool vs. Cascade vs. Side Channel in 2017?**
