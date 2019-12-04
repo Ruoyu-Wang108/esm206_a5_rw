@@ -104,14 +104,7 @@ ggplot(data = mack_creek_a,
 
 #### B. Salamander abundance by channel classification and forest sections in 2017.
 
-Table 1 shows 2017 salamander counts by channel classification (Pool, Cascade and Side Channel) in old growth (OG) and clear cut (CC) sections of Mack Creek.
-
-
-***Table. 1*** *Summary table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek. Data: Andrews Forest LTER Site.* 
-
-
-
-```{r b_props_table}
+***Table. 1*** *Summary table of 2017 salamander counts by channel classification (pool, cascades and side channel) in old growth (OG) and clear cut (CC) sections of Mack Creek. Data: Andrews Forest LTER Site.* 
 
 
 
@@ -159,18 +152,6 @@ channel_section_props %>%
 
 #### C. Association between channel classifications and forest sections on mean salamanders weights.
 
-
-
-```{r c_chi_test}
-
-
-Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
-
-We use Chi-Square ($\chi$^2^) test to compare proportions.
-
-Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
-
-Alternative hypothesis: association between variables.
 
 ```{r c_chi_test}
 
