@@ -46,7 +46,7 @@ knitr::include_graphics("Dicamptodon_tenebrosus_2.JPG")
 
 ### Data and Methods
 
-The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the LTER Network Data Portal, and full metadata can be found [here](https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-and.4027.12). In the data set, sections of the forest are specified as clear cut (“CC”) and old growth (“OG”), while channel types are specified as cascade, “C”, pool, “P”, and side channel, “SC”. A Chi-Square ($\chi$^2) test was performed to determine if forest section was a determining factor in which channel type salamanders were found. Additionally, an unpaired two-sample t-test was used to determine if the weights of salamanders differed significantly between the two forest sections. Finally, a one-way ANOVA test was conducted to determine if there was significant difference in mean salamander weight among the three channel types between the two forest sections. All analyses and figures were made using R Studio version 1.2.5001.
+The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the LTER Network Data Portal, and full metadata can be found [here](https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-and.4027.12). In the data set, sections of the forest are specified as clear cut (“CC”) and old growth (“OG”), while channel types are specified as cascade, “C”, pool, “P”, and side channel, “SC”. A Chi-Square ($\chi$^2^) test was performed to determine if forest section was a determining factor in which channel type salamanders were found. Additionally, an unpaired two-sample t-test was used to determine if the weights of salamanders differed significantly between the two forest sections. Finally, a one-way ANOVA test was conducted to determine if there was significant difference in mean salamander weight among the three channel types between the two forest sections. All analyses and figures were made using R Studio version 1.2.5001.
 
 
 ```{r  out.width = "60%"}
@@ -318,7 +318,7 @@ ggplot() +
 
 ```
 
-***Figure. 5*** *The grey points showed the mean weights within each channel groups, the error bar indicates the standard diviation of the data. Data: Andrews Forest LTER Site.*
+***Figure. 5*** *The grey points showed the mean weights within each channel groups (Side channel - `r round(channel_summary_table$mean[3], 2)`, Pool - `r round(channel_summary_table$mean[2], 2)`, and Cascade - `r round(channel_summary_table$mean[1], 2)` ), the error bar indicates the standard diviation of the data (Side channel - `r round(channel_summary_table$sd[3], 2)`, Pool - `r round(channel_summary_table$sd[2], 2)`, and Cascade - `r round(channel_summary_table$sd[1], 2)`). Data: Andrews Forest LTER Site.*
  
 
 **2. Is there a significant difference in mean weights for Pacific giant salamanders observed in Pool vs. Cascade vs. Side Channel in 2017?**
@@ -364,8 +364,6 @@ b) Samples are independent. Due to the different locations of these three channe
 c) Population variances are equal. In the summary table (Table.2), notice that the largest variance (Pool - `r round(channel_summary_table$var[2], 2)`) is less than the four times of the smallest variance (Side Channel - `r round(channel_summary_table$var[3], 2)`), which means the variances are close enough. Besides, based on the results from Levene's Test (Levene's F(`r round(levene_e[[1,1]], 2)`) = `r round(levene_e[[1,2]], 2)`, *p* = `r round(levene_e[[1,3]], 3)` > 0.05), there is no significant difference in variances between groups.
 
 Therefore, the ANOVA analysis is suitable for this question.
-
-
 
 ```{r e_anova}
 # Run one-way ANOVA to compare group means
