@@ -60,7 +60,7 @@ include_graphics("mack_creek_map_3.png")
 
 From 2012 to 2018, the total amount of Pacific giant salamanders has changed in different trends in two different forest sections: clear cut and old growth area  (Figure.3).
 
-```{r compare_counts_sections}
+```{r sections_line_graph}
 # Find the counts of pacific giant salamander at OG and CC
 mack_creek_a <- mack_creek_df %>% 
 # filter(!notes == "Recap") %>% whether to minus these data or not
@@ -102,7 +102,7 @@ Table of 2017 salamander counts by channel classification (pool, cascades and si
 
 ***Table. 1*** *Summary table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek. Data: .* 
 
-```{r ruoyu_result_b}
+```{r b_props_table}
 # Find the counts of salamander by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek in year 2017.
 salam_channel_count <- mack_creek_df %>% 
   filter(unittype %in% c("C", "P", "SC")) %>% 
@@ -151,7 +151,7 @@ Null hypothesis: No association between channel classification and different for
 
 alternative hypothesis: association between variables
 
-```{r result_c_chi_test}
+```{r c_chi_test}
 # Chi-square test for independence
 
 # A. First, get just a contingency table of counts we just want the four count values in a df, nothing else: 
@@ -170,7 +170,7 @@ Since p > 0.05, we retain the null hypothesis that channel locations and samplin
 
 Only considering creek section (OG or CC) as a variable (not further factoring by channel classification), answer: Is there a significant difference in mean weights for Pacific giant salamanders observed in the two forest sections (CC and OG) in 2017?
 
-```{r result_d}
+```{r d_ttest_graph}
 # Specify the data to be tested
 mack_creek_d <- mack_creek_df %>%
   filter(year == 2017) %>% 
@@ -184,6 +184,7 @@ forest_summary_table <- mack_creek_d %>%
     sd = sd(weight, na.rm = TRUE),
     count = n()
   )
+
 
 # Visulize the two groups of data
 ggplot()+
@@ -203,17 +204,17 @@ ggplot()+
              show.legend = FALSE)+
   scale_y_discrete(expand = c(0,0)) +
   scale_color_manual(values = cbPalette) +
-  annotate("rect", xmin = 53, xmax = 77, 
+  annotate("rect", xmin = 53, xmax = 74, 
            ymin = 54, ymax = 82, 
            fill = "white",
            color = "grey40",
            alpha = 0) +
-  annotate("text", x = 65, y = 78, 
+  annotate("text", x = 64, y = 78, 
            label = "Sections", 
-           size = 6, color = "black") + 
-  annotate("text", x = 68: 68, y = c(60, 70), 
+           size = 5, color = "black") + 
+  annotate("text", x = 67: 67, y = c(60, 70), 
            label = c("Clear cut", "Old growth"), 
-           size = 5, color = c("#E69F00", "#56B4E9")) +  
+           size = 4, color = c("#E69F00", "#56B4E9")) +  
   annotate("rect", xmin = 55, xmax = 60, 
            ymin = 57, ymax = 62, 
            fill = "#E69F00",
@@ -228,7 +229,7 @@ ggplot()+
 ```
 ***Figure. 4*** *Data: .*
 
-```{r result_d_ttest}
+```{r d_ttest}
 # Perform a t.test
 # null hypothesis: means are equal (difference in means = 0)
 # alternative hypothesis: means are not equal
@@ -244,7 +245,7 @@ In year 2017, mean weight of Pacific giant salamanders (g) measured in clear cut
 
 #### E. The influence of channel classfications on Pacific giant salamanders weights.
 
-```{r result_e_data_wrangling}
+```{r e_df_sumtable}
 
 # Only consider the channel type as a factor here
 mack_creek_e <- mack_creek_df %>%
@@ -267,11 +268,12 @@ channel_summary_table <- mack_creek_e %>%
     var = var(weight, na.rm = TRUE),
     count = n()
   )
+channel_summary_table
 ```
 
 **1. Visually compare Pacific giant salamander weights between the three channel classifications.**
 
-```{r result_e_weights_graph}
+```{r e_channel_beeswarm}
 # make a graph
 ggplot() +
   geom_beeswarm(data = mack_creek_e,
@@ -311,7 +313,21 @@ ggplot() +
 
 **2. Is there a significant difference in mean weights for Pacific giant salamanders observed in pools vs. cascades vs. side-channels in 2017?**
 
-```{r result_e_check_variance}
+We adopted the one-way analysis of variance (ANOVA) to solve that problem. 
+
+First, we made our hypothesises. 
+Null Hypothesis (H0): The mean weights of Pacific giant salamanders from pools, cascades, and side channels are the same. Alternative Hypothesis (HA): At least two group means are NOT equal.
+
+Second, we check whether the data satisify the assumptions for ANOVA: 
+
+1) The sample distribution should be normal. Through the beeswarm plot we could observe that most weights were concentrated at 0-6g. The data was presented as stew to the left side. However, the sample sizes within each groups (pools=`r channel_summary_table$count[2]`, cascades=`r channel_summary_table$count[1]`), and side channel=`r channel_summary_table$count[3]`) are all more than 30, which could be considered as large enough. So the distributions of the sample statistics will be normally distributed.
+
+2) Samples are independent. Due to the different locations of these three channels, the sample data collected from different places should be independent.
+
+3) Population variances are equal. 
+
+
+```{r e_channel_kable}
 
 # check variances
 channel_summary_table %>% 
@@ -330,7 +346,7 @@ channel_summary_table %>%
 
 largest variance (Pool) (185.58), smallest variance (Side-Channel) (68.31). The largest variance needs to be smaller than at least 4 times the smallest variance to be considered close enough.  
 
-```{r result_e_levene_test}
+```{r e_levene_test}
 # Levene's statistical test for equal variance:
 
 levene_test_e <- leveneTest(weight ~ unittype, data = mack_creek_e)
@@ -340,7 +356,7 @@ levene_test_e
 
 Through Levene's test for homogeneity of variance, there is no 
 
-```{r result_e_anova}
+```{r e_anova}
 # Run one-way ANOVA to compare group means
 
 # null hypothesis: no significant difference across groups
@@ -364,7 +380,7 @@ aov_e_outcomes <- unlist(summary(aov_e))
 
 Of the three groups, mean salamander weight differed significantly between side channels and pools (one-way ANOVA with post-hoc Tukey's HSD, F(`r aov_e_outcomes[1]`, `r aov_e_outcomes[2]`) = `r round(aov_e_outcomes[7],2)`, *p* = `r round(aov_e_outcomes[9],3)`).
 
-```{r ANOVA_effect_size_cohens_d}
+```{r effect_size_cohens_d}
 # pairwise cohen's d tests
 
 # compairing Side Channel - Pool
@@ -380,28 +396,10 @@ cohen_d_side_channel_pool <- cohen.d(data = side_channel_pool_e, weight~unittype
 cohen_d_side_channel_pool
 ```
 
-The effect size was small between Side Channel and Pool samples: `r cohen_d_side_channel_pool$estimate`.
+The effect size was small between Side Channel and Pool samples: .
 
-```{r ANOVA_effect_size_means}
-# calculate samples means for pool and side channel
 
-pool_weight <- mack_creek_e %>% 
-  filter(unittype == "Pool")
-
-pool_mean <- mean(pool_weight$weight)
-
-side_channel_weight <- mack_creek_e %>%
-  filter(unittype == "Side Channel")
-
-side_channel_mean <- mean(side_channel_weight$weight)
-
-means_difference_P_SC <- pool_mean - side_channel_mean
-
-means_difference_P_SC
-
-```
-
-The actual difference of mean weights between salamanders found in Pools and salamanders equals `r means_difference_P_SC`
+The actual difference of mean weights between salamanders found in Pools and salamanders equals
 
 **3. Limits about comparing means across the groups.**
 
