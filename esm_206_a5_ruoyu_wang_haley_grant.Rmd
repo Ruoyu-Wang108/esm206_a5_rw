@@ -185,8 +185,6 @@ These results indicate that the proportions of salamanders in each section and c
 
 #### D. The influence of forest sections on Pacific giant salamanders weights.
 
-The mean weight of salamanders in old growth and clear cut sections of the forest were not significantly different in 2017 (Figure 4). 
-
 ```{r d_ttest_graph}
 # Specify the data to be tested
 mack_creek_d <- mack_creek_df %>%
@@ -244,7 +242,7 @@ ggplot()+
            alpha = 0.4) +
   theme_minimal()
 ```
-***Figure. 4*** *Data: Andrews Forest LTER Site.*
+***Figure. 4*** *Counts of salamanders by weight for old growth and clear cut forest sections in 2017. The orange dotted line indicates mean salamander weight for clear cut sections, while the blue dotted line indicates mean salamander weight for old growth setions. The means appear relatively close together. Data: Andrews Forest LTER Site.*
 
 ```{r d_ttest}
 # Perform a t.test
@@ -258,7 +256,7 @@ section_d <- effsize::cohen.d(data = mack_creek_d, weight~section, na.rm = TRUE)
 
 ```
 
-In year 2017, mean weight of Pacific giant salamanders (g) measured in clear cut forests (`r round(forest_summary_table$mean[1], 2)` $\pm$ `r round(forest_summary_table$sd[1], 2)`, n = `r forest_summary_table$count[1]`) did not have significant difference from the average salamander weight in old growth forest areas (`r round(forest_summary_table$mean[2], 2)` $\pm$ `r round(forest_summary_table$sd[2], 2)`, n = `r forest_summary_table$count[2]`) by a unpaired two-sample t-test (t(`r round(sectiont_ttest$parameter, 2)`) = `r round(sectiont_ttest$statistic, 2)`, *p*(`r round(sectiont_ttest$p.value, 3)`) > 0.05) . The difference in mean weight between the two groups is 1.20 mm, with a negligible effect size (Cohen's d = `r round(section_d$estimate, 2)`). Therefore, we consider the salamander weights in clear cut areas were not significantly different from old growth ones. Histogram presented in Figure.4.
+In year 2017, mean weight of Pacific giant salamanders (g) measured in clear cut forests (`r round(forest_summary_table$mean[1], 2)` $\pm$ `r round(forest_summary_table$sd[1], 2)`, n = `r forest_summary_table$count[1]`) was not significantly different from the average salamander weight in old growth forest areas (`r round(forest_summary_table$mean[2], 2)` $\pm$ `r round(forest_summary_table$sd[2], 2)`, n = `r forest_summary_table$count[2]`) by a unpaired two-sample t-test (t(`r round(sectiont_ttest$parameter, 2)`) = `r round(sectiont_ttest$statistic, 2)`, *p*(`r round(sectiont_ttest$p.value, 3)`) > 0.05) . The difference in mean weight between the two groups is 1.20 mm, with a negligible effect size (Cohen's d = `r round(section_d$estimate, 2)`). Therefore, we consider the salamander weights in clear cut areas were not significantly different from old growth ones. Histogram presented in Figure.4.
 
 #### E. The influence of channel classifications on Pacific giant salamanders weights.
 
