@@ -149,21 +149,21 @@ channel_section_props %>%
 
 ```
 
+The percentages show the proportions of salamanders in each channel type by section. For example, of the salamanders found in the cascade channel type, 55% were located in clear cut sections, while 45% were located in old growth sections. 
+
 #### C. Association between channel classifications and forest sections on mean salamanders weights.
 
 
 
-Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
-
-We use Chi-Square ($\chi$^2^) test to compare proportions.
-
-Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
-
-Alternative hypothesis: association between variables.
-
-
-
 ```{r c_chi_test}
+
+# Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
+# 
+# We use Chi-Square ($\chi$^2^) test to compare proportions.
+# 
+# Null hypothesis: No association between channel classification and different forest sections. It is independent between the variables.
+# 
+# Alternative hypothesis: association between variables.
 
 
 # Chi-square test for independence
@@ -175,11 +175,13 @@ salam_chi_counts <- channel_section_table %>%
 # B. Run a chi-square test
 my_salam_chi <- chisq.test(salam_chi_counts)
 
+# Since p > 0.05, we retain the null hypothesis that channel locations and sampling sections are independent. We could conclude that the channel location and two sections are independent. 
+
 ```
 
+There are no significant differences in forest section (clear cut / old growth) based on which channel type salamanders are found ($\chi$^2^(`r my_salam_chi$parameter`) = `r round(my_salam_chi$statistic,2)`, *p* (`r round(my_salam_chi$p.value,3)`) > 0.05).
 
-Since p > 0.05, we retain the null hypothesis that channel locations and sampling sections are independent. We could conclude that the channel location and two sections are independent. In other words: "There are no significant differences in forest condition (clear cut / old growth) based on where in the channels salamanders are found ($\chi$^2^(`r my_salam_chi$parameter`) = `r round(my_salam_chi$statistic,2)`, *p* (`r round(my_salam_chi$p.value,3)`) > 0.05)."
-
+These results indicate that the proportions of salamanders in each section and channel type, as outlined in Table 1, are to be expected if forest section is not a determining factor in where salamanders were located in Mack Creek. 
 
 #### D. The influence of forest sections on Pacific giant salamanders weights.
 
