@@ -1,11 +1,11 @@
 ---
 output: html_document
 ---
-<<<<<<< HEAD
+
 # Pacific giant salamanders in Mack Creek: comparing abundance and weight against forest types and channel sections
-=======
+
 # Pacific giant salamanders in Mack Creek: comparing abundance and weight against different forest types and channel sections
->>>>>>> 0397cc50fefb7626f5163c60724f6aa3fcceedc6
+
 
 #### A report for ESM 206: Statistics and Data Analysis in Environmental Science and Management
 
@@ -39,12 +39,12 @@ mack_creek_df <- read_csv("mack_creek_vertebrates.csv") %>%
 
 ### Introduction
 
-<<<<<<< HEAD
+
 Around 1963, sections of forests near Mack Creek, Oregon were clear cut, meaning the trees of that section were cut down in a uniform way (Gregory 2016) (Wikipedia). Beginning in 1993, Stanley V. Gregory and researchers at the Andrews Forest LTER Site began studying Pacific giant salamanders (Dicamptodon tenebrosus) in the area. In the study, called "Aquatic Vertebrate Population Study in Mack Creek, Andrews Experimental Forest, 1987 to present," researchers recorded the weights of salamanders (g) and made note of their locations within Mack Creek. The area is composed of clear cut and 500-year-old coniferous old growth forests. Within the two sections of forests, salamanders are found in cascades, pools and side channels. This report does not include salamanders found in isolated pools, as these areas are separated from the creek and not within the scope of this report. Studying the Pacific giant salamander population in this area is relevant to understanding how new forests- the results of clear cutting- affect local wildlife populations, and how these effects compare to populations living in old growth forests. 
-=======
+
 Around 1963, sections of forests near Mack Creek, Oregon, were clear cut for logging (Gregory 2016). Beginning in 1993, Stanley V. Gregory and researchers at the Andrews Forest LTER Site began studying Pacific giant salamanders (Dicamptodon tenebrosus) in the area. In the study, called "Aquatic Vertebrate Population Study in Mack Creek, Andrews Experimental Forest, 1987 to present," researchers recorded the weights of salamanders (g) and made note of their location within Mack Creek. The area is composed of clear cut and 500-year-old coniferous old growth forests. Within the two sections of forests, salamanders are found in cascades, pools and side channels. This report does not include salamanders found in isolated pools, as these areas are separated from the creek and not within the scope of this report. Studying the Pacific giant salamander population in this area is relevant to understanding how new forests- the results of logging- affect local wildlife populations, and how these effects compare to populations living in old growth forests. 
 
->>>>>>> 0397cc50fefb7626f5163c60724f6aa3fcceedc6
+
 
 ```{r  out.width = "60%"}
 knitr::include_graphics("Dicamptodon_tenebrosus_2.JPG") 
@@ -54,14 +54,14 @@ knitr::include_graphics("Dicamptodon_tenebrosus_2.JPG")
 
 ### Data and Methods
 
-<<<<<<< HEAD
+
 
 The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the LTER Network Data Portal, and full metadata can be found [here](https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-and.4027.12). Sections of the forest are specified as clear cut (“CC”) and old growth (“OG”), while channel types are specified as cascade, “C”, pool, “P”, and side channel, “SC”. A chi-squared test was performed to determine if forest section was a determining factor in which channel type salamanders were found. Additionally, an unpaired two-sample t-test was used to determine if the weights of salamanders differed significantly between the two forest sections. Finally, a one-way ANOVA test was conducted to determine if there was a significant difference in mean salamander weight among the three channel types between the two forest sections. All analyses and figures were made using R Studio version 1.2.5001.
 
-=======
+
 The [data set](https://portal.lternet.edu/nis/mapbrowse?packageid=knb-lter-and.4027.12) was provided by the LTER Network Data Portal, and full metadata can be found [here](https://portal.lternet.edu/nis/metadataviewer?packageid=knb-lter-and.4027.12). In the data set, sections of the forest are specified as clear cut (“CC”) and old growth (“OG”), while channel types are specified as cascade, “C”, pool, “P”, and side channel, “SC”. A Chi-Square ($\chi$^2) test was performed to determine if forest section was a determining factor in which channel type salamanders were found. Additionally, an unpaired two-sample t-test was used to determine if the weights of salamanders differed significantly between the two forest sections. Finally, a one-way ANOVA test was conducted to determine if there was significant difference in mean salamander weight among the three channel types between the two forest sections. All analyses and figures were made using R Studio version 1.2.5001.
 
->>>>>>> 0397cc50fefb7626f5163c60724f6aa3fcceedc6
+
 
 ```{r  out.width = "60%"}
 include_graphics("mack_creek_map_3.png") 
@@ -119,15 +119,15 @@ Table 1 shows 2017 salamander counts by channel classification (Pool, Cascade an
 
 ***Table. 1*** *Summary table of 2017 salamander counts by channel classification (pool, cascades and side-channel) in old growth (OG) and clear cut (CC) sections of Mack Creek. Data: Andrews Forest LTER Site.* 
 
-<<<<<<< HEAD
+
 
 ```{r b_props_table}
 
 
-=======
+
 ```{r b_props_table}
 
->>>>>>> 0397cc50fefb7626f5163c60724f6aa3fcceedc6
+
 # Find the counts of salamander by channel classification (Pool, Cascade and Side Channel) in old growth (OG) and clear cut (CC) sections of Mack Creek in year 2017.
 
 salam_channel_count <- mack_creek_df %>% 
@@ -170,10 +170,10 @@ channel_section_props %>%
 #### C. Association between channel classifications and forest sections on mean salamanders weights.
 
 
-<<<<<<< HEAD
+
 ```{r c_chi_test}
 
-=======
+
 Is there a significant difference in where in the channel Pacific giant salamanders are located (pool, cascade or side channel) between the two sections (old growth and clear cut)? 
 
 We use Chi-Square ($\chi$^2^) test to compare proportions.
@@ -183,7 +183,7 @@ Null hypothesis: No association between channel classification and different for
 Alternative hypothesis: association between variables.
 
 ```{r c_chi_test}
->>>>>>> 0397cc50fefb7626f5163c60724f6aa3fcceedc6
+
 
 # Chi-square test for independence
 
@@ -345,11 +345,11 @@ ggplot() +
 ```
 
 ***Figure. 5*** *The grey points showed the mean weights within each channel groups, the error bar indicates the standard diviation of the data. Data: Andrews Forest LTER Site.*
-<<<<<<< HEAD
 
-=======
+
+
  
->>>>>>> 0397cc50fefb7626f5163c60724f6aa3fcceedc6
+
 
 **2. Is there a significant difference in mean weights for Pacific giant salamanders observed in Pool vs. Cascade vs. Side Channel in 2017?**
 
